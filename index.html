@@ -494,25 +494,6 @@
       return false;
     }
 
-    // =========================================================================
-    // 🚀 สคริปต์อัตโนมัติ: แก้ปัญหาบัญชี Google ตีกัน (ไม่ต้องไปเปิดในโหมดไม่ระบุตัวตน)
-    // =========================================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        // ค้นหาทุกลิงก์บนหน้าเว็บที่ชี้ไปยัง Google Script
-        const scriptLinks = document.querySelectorAll('a[href^="https://script.google.com/"]');
-        
-        scriptLinks.forEach(link => {
-            const originalUrl = link.href;
-            
-            // นำ AccountChooser มาแปะนำหน้าลิงก์เดิมของคุณครู
-            // วิธีนี้จะบังคับให้มันเด้งหน้า "เลือกบัญชี" ของ Google ขึ้นมาก่อน 
-            // ทำให้เบราว์เซอร์ไม่สับสนว่าต้องใช้บัญชีไหนเข้าแอป
-            link.href = "https://accounts.google.com/AccountChooser?continue=" + encodeURIComponent(originalUrl);
-            
-            // เพิ่มความปลอดภัยและล้างค่าการส่งต่อ (ป้องกัน Google สับสนโดเมนต้นทาง)
-            link.setAttribute('rel', 'noopener noreferrer');
-        });
-    });
   </script>
 </body>
 </html>
