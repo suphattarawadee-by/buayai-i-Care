@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบ Buayai I-Care</title>
+    <!-- โหลดฟอนต์ภาษาไทย Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* จัดให้หน้าเว็บพอดีจอ 100% ไม่มีแถบเลื่อน */
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background-color: #f8fafc; 
+            font-family: 'Sarabun', sans-serif; 
+        }
+        
+        /* ดีไซน์ตัวโหลดดิ้ง (Loading Spinner) หมุนๆ ระหว่างรอแอปเปิด */
+        #loader { 
+            position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            text-align: center; color: #3b82f6; z-index: 1; 
+        }
+        .spinner { 
+            border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; 
+            border-radius: 50%; width: 45px; height: 45px; 
+            animation: spin 1s linear infinite; margin: 0 auto 15px; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* ดีไซน์กล่องใส่แอป (Iframe) ให้เต็มจอ */
+        iframe { 
+            width: 100%; height: 100%; border: none; 
+            position: relative; z-index: 10; display: none; /* ซ่อนไว้ก่อนจนกว่าจะโหลดเสร็จ */
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- หน้าจอโหลดดิ้ง -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <div id="loading-text" style="font-weight: 600;">กำลังโหลดระบบ...<br><span style="font-size: 0.8rem; color: #64748b;">กรุณารอสักครู่</span></div>
+    </div>
+
+    <!-- กล่องแสดงผลแอป (Iframe) -->
+    <iframe id="appFrame" allowfullscreen></iframe>
+
+    <script>
+        // ========================================================
+        // 1. ฐานข้อมูลลิงก์แอปทั้งหมด (เพิ่มแอปใหม่ๆ ได้ที่นี่เลยครับ)
+        // ========================================================
+        const appLinks = {
+            // -- หมวดครู --
+            "checkin_morning": "https://script.google.com/macros/s/AKfycbyMcG_RrT3pKPvAIYMmUWujYup7oZRCcWjla2mMKR9hVJg061Ln81xyrNT6amiObClv5w/exec",
+            "time_1_67": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWVYDGrsQeJ9h_jqV24X6BP6HjWq7h0lTUBwVcbfyILbLzW_Y1BMKdNdqRMphFshBNF8BDOblSYJww/pubhtml",
+            "time_1_68": "https://script.google.com/macros/u/1/s/AKfycbxw3Zx2zM8X4ZyjMhz4iu4bu_poCnkNWlmzQD_kWD3hJMWlkDyFPfIBBXOb-xsM99p-/exec",
+            "time_2_68": "https://script.google.com/macros/s/AKfycbwY7KMRq07VvE5YgxaTQPJbfEMmZ-RgFGfGeZpoijHf5kstPbENSrvyoJFPVPHPNbBHJg/exec",
+            
+            // -- หมวดนักเรียน (E-point) --
+            "epoint_register": "https://script.google.com/macros/s/AKfycby4lKE_rdjA_XXGJpJKrGfWKsyc9lmkl1IvPfOgBoSAwOKxbZkcGwoYjoTK1zVO5awu/exec",
+            "epoint_login": "https://script.google.com/macros/s/AKfycbwfvdN82fXmyD8J9QtIktImEQIkZsHVLnvuMYEii3tqxttK9X2_4nvbOvaYde44NwSL/exec",
+            "epoint_good": "https://script.google.com/macros/s/AKfycbwrV8UG2DCSDlIFg-eykFLueInZNFhXLQbNuVDEvJ5iutAEYZ7qAVwxmjltThZrWhMK/exec",
+            
+            // -- หมวดแอดมิน --
+            "admin_fail": "https://script.google.com/macros/s/AKfycbwwcK0fvvDMbuvRP4q-Th4ZwATRNWTE1lz_4R9s7CV_bj952csHJQGeDCKVvLQNDGrJ/exec",
+            "admin_center": "https://script.google.com/macros/s/AKfycbxHy8BcRtFMEMfhgB_RKShilDnqXRic6FEeuDtrMuTxpqQNOG20XKOdvkcpBTNgZcb6/exec",
+            "admin_add_score": "https://script.google.com/macros/s/AKfycbyOFEh0NfBROic2aq9AKn_calcR3axkDZSYuXafJGcpdOMzyllln2V2vW6MITsNEiwY/exec",
+            "admin_reset_pass": "https://script.google.com/macros/s/AKfycbxuddNzqzZjruNZYeD1arvuhvKsEify-bm8R_haRyZzQ-J_4wXVSXW8pET_kCLkfVDc/exec"
+            
+            // 📌 วิธีเพิ่มระบบใหม่ในอนาคต:
+            // ให้เอา "ชื่อไอดี": "ลิงก์ Web App" มาวางต่อท้ายด้านล่างนี้ได้เลยครับ
+            // "room_1": "https://script.google.com/macros/s/xxxx/exec",
+        };
+
+        // ========================================================
+        // 2. สคริปต์ดึงแอปมาแสดง
+        // ========================================================
+        // อ่านค่า id จาก URL (เช่น เมื่อผู้ใช้กดมาจากเว็บหลัก app.html?id=checkin_morning)
+        const urlParams = new URLSearchParams(window.location.search);
+        const appId = urlParams.get('id');
+        
+        const frame = document.getElementById('appFrame');
+        const loader = document.getElementById('loader');
+        const loadingText = document.getElementById('loading-text');
+
+        if (appId && appLinks[appId]) {
+            // ถ้าเจอไอดีแอปในฐานข้อมูล ให้เอาลิงก์ยัดใส่ iframe
+            frame.src = appLinks[appId];
+            
+            // พอหน้าแอป Google Script โหลดเสร็จปุ๊บ ให้ซ่อนตัวโหลดหมุนๆ และโชว์แอปขึ้นมา
+            frame.onload = function() {
+                loader.style.display = 'none';
+                frame.style.display = 'block';
+            };
+        } else {
+            // ถ้าไม่เจอแอป (เช่น พิมพ์ลิงก์ผิด) แจ้งเตือนข้อผิดพลาด
+            document.querySelector('.spinner').style.display = 'none';
+            loadingText.innerHTML = `
+                <span style="color:#ef4444; font-size:1.2rem;">❌ ไม่พบระบบที่ระบุ</span><br><br>
+                <button onclick="window.close()" style="padding:8px 20px; border-radius:10px; border:none; background:#1e3a8a; color:white; cursor:pointer; font-family:'Sarabun';">ปิดหน้านี้</button>
+            `;
+        }
+    </script>
+</body>
+</html>
