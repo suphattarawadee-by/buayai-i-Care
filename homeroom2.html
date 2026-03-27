@@ -11,23 +11,47 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; color: #1e293b; overflow-x: hidden; }
         
         /* Login Screen */
         #login-view { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f172a, #1e3a8a); }
         .login-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; }
 
-        /* Sidebar Navigation */
-        .sidebar { height: 100vh; width: 280px; position: fixed; top: 0; left: 0; background: #0f172a; color: white; z-index: 1050; padding: 20px; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
-        .main-content { margin-left: 280px; padding: 30px; min-height: 100vh; }
+        /* Top Navbar (App Bar) */
+        .top-navbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: #0f172a; color: white; z-index: 1030;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .hamburger-btn { background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; transition: 0.2s; }
+        .hamburger-btn:active { transform: scale(0.9); color: #93c5fd; }
+
+        /* Offcanvas Sidebar */
+        .sidebar {
+            height: 100vh; width: 280px; position: fixed; top: 0; left: -280px; /* ซ่อนไว้ด้านซ้าย */
+            background: #ffffff; color: #1e293b; z-index: 1050; padding: 20px; 
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1); transition: left 0.3s ease;
+        }
+        .sidebar.show { left: 0; } /* คลาสสำหรับแสดงเมนู */
+        #sidebar-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(0,0,0,0.5); z-index: 1040; backdrop-filter: blur(2px);
+        }
         
-        .nav-link { color: #94a3b8; margin-bottom: 10px; border-radius: 12px; padding: 12px 20px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; font-weight: 600; }
-        .nav-link:hover, .nav-link.active { background: #3b82f6; color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
-        .nav-link.active-head { background: #f59e0b; color: #0f172a; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); }
+        .main-content {
+            padding: 20px; min-height: 100vh;
+            padding-top: 85px; /* เว้นที่ว่างด้านบนให้ Top Navbar */
+            max-width: 1200px; margin: 0 auto;
+        }
+        
+        .nav-link { color: #64748b; margin-bottom: 10px; border-radius: 12px; padding: 12px 20px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; font-weight: 600; }
+        .nav-link:hover, .nav-link.active { background: #eff6ff; color: #2563eb; }
+        .nav-link.active-head { background: #fffbeb; color: #d97706; }
         .nav-link i { font-size: 1.2rem; margin-right: 15px; width: 20px; text-align: center; }
 
         /* Card & Forms */
-        .content-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        .content-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .section-title { font-weight: 700; color: #1e3a8a; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 20px; margin-top: 10px; }
         
         .form-check-custom { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px 15px 15px 45px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
@@ -47,12 +71,11 @@
         .mock-sheet { border-collapse: collapse; width: 100%; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .mock-sheet th { background: #1e293b; color: white; padding: 15px; font-weight: 600; text-align: center; border: 1px solid #334155; }
         .mock-sheet td { padding: 15px; border: 1px solid #cbd5e1; vertical-align: top; }
-        .holiday-row { background-color: #fef2f2 !important; color: #dc2626; font-weight: bold; text-align: center; }
 
         /* Submit UI */
         .timeline-item { position: relative; padding-left: 40px; margin-bottom: 15px; }
-        .timeline-icon { position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .timeline-line { position: absolute; left: 14px; top: 30px; bottom: -15px; width: 2px; background-color: #e2e8f0; }
+        .timeline-icon { position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; z-index: 2;}
+        .timeline-line { position: absolute; left: 14px; top: 30px; bottom: -15px; width: 2px; background-color: #cbd5e1; z-index: 1;}
         .timeline-item:last-child .timeline-line { display: none; }
         .signature-box { border: 2px dashed #cbd5e1; border-radius: 15px; background: #f8fafc; padding: 20px; text-align: center; transition: all 0.3s ease; }
         .signature-box.approved { border: 2px solid #22c55e; background: #f0fdf4; color: #15803d; }
@@ -61,11 +84,17 @@
         .a4-paper { background: white; width: 100%; max-width: 800px; margin: 0 auto; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 5px; }
         .sign-area { display: flex; justify-content: space-around; margin-top: 40px; text-align: center; }
         .sign-line { border-bottom: 1px dotted #1e293b; width: 150px; margin: 0 auto 5px; display: inline-block; }
-        
         .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; cursor: pointer; }
         .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
-
         .preview-sig-img { max-width: 150px; max-height: 80px; object-fit: contain; margin-bottom: 5px; }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; }
+            .top-navbar, .sidebar, #sidebar-overlay, .btn-primary { display: none !important; }
+            .main-content { padding: 0 !important; margin: 0 !important; }
+            .a4-paper { box-shadow: none; padding: 0; }
+        }
     </style>
 </head>
 <body>
@@ -90,11 +119,26 @@
     <!-- ============================================== -->
     <div id="app-view" style="display: none;">
         
-        <!-- SIDEBAR -->
-        <div class="sidebar">
-            <div class="text-center mb-4 pb-3 border-bottom border-secondary">
-                <h4 class="fw-bold text-white mb-0">ระบบโฮมรูม</h4>
-                <small class="text-info">Buayai I-Care</small>
+        <!-- TOP NAVBAR (Hamburger Menu) -->
+        <div class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="hamburger-btn me-3" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="m-0 fw-bold">Buayai I-Care</h5>
+            </div>
+            <div class="d-flex align-items-center small">
+                <span class="badge bg-light text-dark rounded-pill me-2 current-room-badge" style="display: none;"></span>
+                <i class="bi bi-person-circle fs-5 me-2 text-info"></i> <span id="top-user-name" class="fw-bold text-info"></span>
+            </div>
+        </div>
+
+        <!-- OVERLAY (ฉากหลังดำตอนเปิดเมนู) -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+        
+        <!-- SIDEBAR (ซ่อนด้านซ้าย สไลด์ออกมา) -->
+        <div class="sidebar" id="mainSidebar">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <h5 class="fw-bold text-dark m-0"><i class="bi bi-grid-fill text-primary me-2"></i>เมนูหลัก</h5>
+                <button type="button" class="btn-close" onclick="toggleSidebar()"></button>
             </div>
             
             <!-- เมนูครูที่ปรึกษา -->
@@ -109,13 +153,7 @@
                 <div class="nav-link active-head" onclick="switchMenu('head-dashboard', this)"><i class="bi bi-inboxes"></i> รายงานที่รอตรวจสอบ</div>
             </div>
             
-            <div class="position-absolute bottom-0 start-0 w-100 p-4">
-                <div class="small text-muted mb-2">เข้าใช้งานโดย:</div>
-                <div class="fw-bold text-white d-flex align-items-center">
-                    <i class="bi bi-person-circle fs-4 me-2"></i> <span id="current-user-name"></span>
-                </div>
-                <button class="btn btn-sm btn-outline-danger w-100 rounded-pill mt-3" onclick="logout()">ออกจากระบบ</button>
-            </div>
+            <button class="btn btn-outline-danger w-100 rounded-pill mt-auto" style="position: absolute; bottom: 20px; left: 20px; width: calc(100% - 40px);" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>ออกจากระบบ</button>
         </div>
 
         <!-- MAIN CONTENT -->
@@ -127,10 +165,9 @@
             <div id="view-record" style="display: none;">
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
-                        <h3 class="fw-bold text-dark m-0">บันทึกการจัดกิจกรรมโฮมรูม</h3>
+                        <h3 class="fw-bold text-dark m-0">บันทึกกิจกรรมโฮมรูม</h3>
                         <p class="text-muted m-0">ประจำวันที่ <span class="today-date-text fw-bold text-primary"></span></p>
                     </div>
-                    <span class="badge bg-white text-dark border p-2 px-3 shadow-sm rounded-pill fs-6 current-room-badge"></span>
                 </div>
 
                 <div class="row">
@@ -168,7 +205,7 @@
                                 <div class="col-6"><div class="stat-box stat-present">มา<br><span class="fs-4">35</span></div></div>
                             </div>
                         </div>
-                        <button class="btn btn-success btn-lg w-100 shadow-lg rounded-pill fw-bold py-3" onclick="saveRecord()">
+                        <button id="btn-save-record" class="btn btn-success btn-lg w-100 shadow-lg rounded-pill fw-bold py-3" onclick="saveRecord()">
                             <i class="bi bi-save2-fill me-2"></i> บันทึกข้อมูลวันนี้
                         </button>
                     </div>
@@ -179,7 +216,7 @@
             <!-- 📍 โซนครู: เสนอหัวหน้าระดับชั้น -->
             <!-- --------------------------------------- -->
             <div id="view-submit" style="display: none;">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                     <div>
                         <h3 class="fw-bold text-dark m-0"><i class="bi bi-send-check-fill text-primary me-2"></i>เสนอหัวหน้าระดับชั้น</h3>
                         <p class="text-muted m-0">สรุปรายงานโฮมรูมสัปดาห์นี้ เพื่อให้หัวหน้าเซ็นรับทราบ</p>
@@ -192,18 +229,19 @@
                 <div class="row g-4">
                     <div class="col-lg-7">
                         <div class="content-card h-100">
-                            <h5 class="fw-bold text-dark border-bottom pb-2 mb-4"><i class="bi bi-calendar-week text-primary me-2"></i>สรุปข้อมูล 1-5 มิ.ย. 69</h5>
-                            <!-- Timeline -->
-                            <div class="timeline-item">
-                                <div class="timeline-icon bg-success text-white"><i class="bi bi-check-lg"></i></div>
-                                <div class="timeline-line"></div><div class="mb-1 fw-bold text-success">จ. 1 มิ.ย.</div>
-                                <div class="p-2 bg-light rounded-3 small text-muted border border-success border-opacity-25">บันทึกเรียบร้อย</div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3 flex-wrap gap-2">
+                                <h5 class="fw-bold text-dark m-0"><i class="bi bi-calendar-week text-primary me-2"></i>สรุปข้อมูลรายสัปดาห์</h5>
+                                <div class="input-group" style="width: auto; max-width: 200px;">
+                                    <span class="input-group-text bg-light text-primary"><i class="bi bi-calendar-range"></i></span>
+                                    <input type="date" class="form-control border-start-0 ps-0 fw-bold text-primary small" id="week-selector" onchange="generateTimeline()">
+                                </div>
                             </div>
-                            <div class="timeline-item" id="tl-tue">
-                                <div class="timeline-icon bg-warning text-dark"><i class="bi bi-exclamation-lg"></i></div>
-                                <div class="timeline-line"></div><div class="mb-1 fw-bold text-warning">อ. 2 มิ.ย.</div>
-                                <div class="p-2 bg-light rounded-3 small text-muted border border-warning border-opacity-25">รอการบันทึกข้อมูล</div>
+                            
+                            <div class="text-center mb-4">
+                                <span class="badge bg-light text-dark border p-2 px-3 shadow-sm rounded-pill" id="week-range-display">กำลังคำนวณ...</span>
                             </div>
+                            
+                            <div class="mt-4 ms-2" id="timeline-container"></div>
                         </div>
                     </div>
                     <div class="col-lg-5">
@@ -228,7 +266,7 @@
             <!-- --------------------------------------- -->
             <div id="view-print" style="display: none;">
                 <div class="text-end mb-3">
-                    <button class="btn btn-primary rounded-pill px-4 shadow-sm" onclick="window.print()"><i class="bi bi-printer-fill me-2"></i>พิมพ์เอกสาร PDF</button>
+                    <button class="btn btn-primary rounded-pill px-4 shadow-sm" onclick="window.print()"><i class="bi bi-printer-fill me-2"></i> พิมพ์เอกสาร PDF</button>
                 </div>
                 
                 <div class="a4-paper">
@@ -245,21 +283,13 @@
                                 <th width="30%">สถิติ</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="print-tbody">
                             <tr>
-                                <td class="text-center">จ. 1 มิ.ย. 69</td>
-                                <td>1. แจ้งข่าวประกาศ: การแต่งกาย<br>2. ตรวจระเบียบ/เล็บ: พบ 3 คน</td>
-                                <td class="small">มา 38 | สาย 0 | ลา 2 | ขาด 0</td>
-                            </tr>
-                            <tr id="print-tue-row" style="display: none;">
-                                <td class="text-center text-primary">อ. 2 มิ.ย. 69</td>
-                                <td id="print-tue-detail" class="text-primary"></td>
-                                <td class="small text-primary">มา 35 | สาย 2 | ลา 1 | ขาด 2</td>
+                                <td colspan="3" class="text-center text-muted py-4">ยังไม่มีข้อมูลการบันทึกในสัปดาห์นี้</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <!-- พื้นที่เซ็นชื่อ (จะอัปเดตเมื่อหัวหน้ารับทราบ) -->
                     <div class="sign-area">
                         <div>
                             <div class="sign-line"></div>
@@ -267,16 +297,14 @@
                             <small class="text-muted">ครูที่ปรึกษา</small>
                         </div>
                         <div id="print-head-area">
-                            <!-- ถ้ายังไม่เซ็น -->
                             <div id="print-head-pending">
                                 <div class="sign-line mt-3"></div>
                                 <p class="mb-0 text-muted">( รอหัวหน้าระดับรับทราบ )</p>
                                 <small class="text-muted">หัวหน้าระดับชั้น</small>
                             </div>
-                            <!-- ถ้าเซ็นแล้ว -->
                             <div id="print-head-approved" style="display: none;">
                                 <img id="print-head-sig-img" src="" class="preview-sig-img"><br>
-                                <p class="mb-0">( นายสมบูรณ์ เป็นผู้นำ )</p>
+                                <p class="mb-0">( ผู้ตรวจสอบ )</p>
                                 <small class="text-muted">หัวหน้าระดับชั้น</small><br>
                                 <small class="text-danger" style="font-size: 0.7rem;" id="print-head-remark"></small>
                             </div>
@@ -291,40 +319,28 @@
             <div id="view-head-dashboard" style="display: none;">
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
-                        <h3 class="fw-bold text-dark m-0"><i class="bi bi-inboxes-fill text-warning me-2"></i>รายงานที่รอการตรวจสอบ</h3>
+                        <h3 class="fw-bold text-dark m-0"><i class="bi bi-inboxes-fill text-warning me-2"></i>รายงานที่รอตรวจสอบ</h3>
                         <p class="text-muted m-0">ระดับชั้นมัธยมศึกษาปีที่ 2</p>
                     </div>
                 </div>
 
-                <div class="content-card p-0 overflow-hidden">
+                <div class="content-card p-0 overflow-auto">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-light">
                             <tr>
                                 <th class="py-3 px-4">ห้อง</th>
-                                <th>รอบสัปดาห์</th>
                                 <th>ผู้ส่ง (ครูที่ปรึกษา)</th>
                                 <th>สถานะ</th>
                                 <th class="text-center">จัดการ</th>
                             </tr>
                         </thead>
                         <tbody id="head-table-body">
-                            <!-- ข้อมูลจำลอง -->
                             <tr>
-                                <td class="px-4 fw-bold">ม.2/1</td>
-                                <td>1 - 5 มิ.ย. 69</td>
-                                <td>ครูสมศรี</td>
+                                <td class="px-4 fw-bold text-primary">ม.2/1</td>
+                                <td>ครูที่ปรึกษา ม.2/1</td>
                                 <td id="head-status-td"><span class="badge bg-secondary">ยังไม่ส่งรายงาน</span></td>
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-primary rounded-pill px-3" id="btn-review-m21" disabled onclick="openReviewModal('ม.2/1')">ตรวจเอกสาร</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 fw-bold">ม.2/2</td>
-                                <td>1 - 5 มิ.ย. 69</td>
-                                <td>ครูสมชาย</td>
-                                <td><span class="badge bg-success">รับทราบแล้ว</span></td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="alert('รับทราบไปแล้วครับ')">ดูประวัติ</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -346,14 +362,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4 bg-light">
-                    <!-- จำลองตารางที่ครูส่งมา -->
                     <div class="bg-white p-3 rounded-3 border mb-3 shadow-sm">
-                        <h6 class="fw-bold text-primary mb-2">ข้อมูลสัปดาห์ที่ 1 - 5 มิ.ย. 69</h6>
+                        <h6 class="fw-bold text-primary mb-2">บันทึกข้อมูลล่าสุด</h6>
                         <table class="table table-sm table-bordered small mb-0">
                             <tr class="table-light"><th width="20%">วันที่</th><th>รายการ</th></tr>
-                            <tr><td>จ. 1 มิ.ย.</td><td>แจ้งเรื่องแต่งกายพละ</td></tr>
-                            <tr><td class="text-primary fw-bold">อ. 2 มิ.ย.</td><td id="review-tue-detail" class="text-primary">...</td></tr>
-                            <tr class="table-secondary"><td colspan="2" class="text-center text-muted">พ. - ศ. ไม่มีบันทึก</td></tr>
+                            <tr><td class="text-primary fw-bold">รอบปัจจุบัน</td><td id="review-tue-detail" class="text-primary">...</td></tr>
                         </table>
                     </div>
 
@@ -362,7 +375,6 @@
                         <span id="review-teacher-note">ไม่มีหมายเหตุ</span>
                     </div>
 
-                    <!-- ส่วนกรอกหมายเหตุและแนบลายเซ็นของหัวหน้า -->
                     <div class="p-3 bg-white border rounded-3 shadow-sm">
                         <label class="fw-bold text-dark mb-1">หมายเหตุกลับไปให้ครูที่ปรึกษา (ถ้ามี)</label>
                         <input type="text" id="head-remark" class="form-control mb-3" placeholder="เช่น รับทราบเรียบร้อยครับ ขอบคุณมากครับ">
@@ -379,7 +391,7 @@
                 </div>
                 <div class="modal-footer border-0 justify-content-center bg-white pb-4">
                     <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
-                    <button type="button" class="btn btn-success rounded-pill px-5 fw-bold shadow" onclick="headApproveReport()"><i class="bi bi-check2-all me-1"></i> รับทราบและอนุมัติ</button>
+                    <button id="btn-approve" type="button" class="btn btn-success rounded-pill px-5 fw-bold shadow" onclick="headApproveReport()"><i class="bi bi-check2-all me-1"></i> รับทราบและอนุมัติ</button>
                 </div>
             </div>
         </div>
@@ -389,52 +401,72 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ====================================================
-        // ⚠️ นำลิงก์ Web App API ที่ Deploy แล้วจาก Google Script มาวางในเครื่องหมายคำพูดด้านล่างนี้ครับ
+        // ⚠️ ลิงก์ API ของคุณครู 
         // ====================================================
         const API_URL = "https://script.google.com/macros/s/AKfycbwckHhDLHnqz8oBfcvj5KQ06ZtqCwbqMUZSPTuaSOPp2A8aJsDXbM9O7X2lG--eb7ty0w/exec";
+
+        // ====================================================
+        // 🚀 ฟังก์ชัน Fetch เชื่อมต่อหลังบ้านแบบ 100% CORS Safe
+        // ====================================================
+        async function sendToAPI(payload) {
+            try {
+                const response = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                return data;
+            } catch (error) {
+                console.error("API Fetch Error:", error);
+                throw error;
+            }
+        }
 
         // ----------------------------------------------------
         // ตัวแปรจำลองฐานข้อมูล (Global State)
         // ----------------------------------------------------
         let appState = {
-            role: null, // 'teacher' หรือ 'head'
-            room: null, // เช่น 'ม.2/1'
-            name: null,
-            // สถานะรายงานประจำสัปดาห์
-            reportDetails: "", // สิ่งที่ครูพิมพ์
-            teacherNote: "",   // โน้ตที่ครูส่งหาหัวหน้า
-            isSubmitted: false, // ครูส่งหรือยัง?
-            isApproved: false,  // หัวหน้าเซ็นหรือยัง?
-            headRemark: "",     // โน้ตจากหัวหน้า
-            headSignatureData: "" // รูป URL
+            role: null, room: null, name: null,
+            reportDetails: "", teacherNote: "", isSubmitted: false, isApproved: false, headRemark: "", headSignatureData: ""
         };
 
-        // ตั้งวันที่
-        document.querySelectorAll('.today-date-text').forEach(el => el.innerText = new Date().toLocaleDateString('th-TH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+        const now = new Date();
+        document.querySelectorAll('.today-date-text').forEach(el => el.innerText = now.toLocaleDateString('th-TH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
 
         // ----------------------------------------------------
-        // ระบบ Login
+        // ฟังก์ชันเปิด/ปิด Hamburger Menu
+        // ----------------------------------------------------
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if(sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                overlay.style.display = 'none';
+            } else {
+                sidebar.classList.add('show');
+                overlay.style.display = 'block';
+            }
+        }
+
+        // ----------------------------------------------------
+        // ระบบ Login และตั้งค่า UI
         // ----------------------------------------------------
         function handleLogin() {
             const input = document.getElementById('login-username').value.trim().toLowerCase();
             const err = document.getElementById('login-error');
-            
             const teachers = ['t21','t22','t23','t24','t25','t26','t27','t28','t29','t210'];
             
             if (teachers.includes(input)) {
-                // เข้าสู่ระบบแบบครู
                 appState.role = 'teacher';
                 appState.room = 'ม.2/' + input.replace('t2', '');
                 appState.name = 'ครูประจำชั้น ' + appState.room;
                 setupUI();
-            } 
-            else if (input === 'm2') {
-                // เข้าสู่ระบบแบบหัวหน้าระดับ
+            } else if (input === 'm2') {
                 appState.role = 'head';
                 appState.name = 'หัวหน้าระดับชั้น ม.2';
                 setupUI();
-            } 
-            else {
+            } else {
                 err.style.display = 'block';
             }
         }
@@ -442,18 +474,31 @@
         function setupUI() {
             document.getElementById('login-view').style.display = 'none';
             document.getElementById('app-view').style.display = 'block';
-            document.getElementById('current-user-name').innerText = appState.name;
+            document.getElementById('top-user-name').innerText = appState.name;
             
             if (appState.role === 'teacher') {
                 document.getElementById('menu-teacher').style.display = 'block';
                 document.getElementById('menu-head').style.display = 'none';
-                document.querySelectorAll('.current-room-badge').forEach(el => el.innerText = 'ห้อง ' + appState.room);
+                
+                // โชว์ Badge ห้องเรียนบน Topbar
+                document.querySelectorAll('.current-room-badge').forEach(el => {
+                    el.innerText = 'ห้อง ' + appState.room;
+                    el.style.display = 'inline-block';
+                });
+                
                 document.querySelectorAll('.current-room-text').forEach(el => el.innerText = appState.room);
                 document.getElementById('print-teacher-name').innerText = appState.name;
+                
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localISOTime = (new Date(Date.now() - tzOffset)).toISOString().split('T')[0];
+                document.getElementById('week-selector').value = localISOTime;
+                generateTimeline();
+                
                 switchMenu('record');
             } else {
                 document.getElementById('menu-teacher').style.display = 'none';
                 document.getElementById('menu-head').style.display = 'block';
+                document.querySelectorAll('.current-room-badge').forEach(el => el.style.display = 'none');
                 switchMenu('head-dashboard');
             }
             updateSyncUI();
@@ -463,26 +508,95 @@
             document.getElementById('login-view').style.display = 'flex';
             document.getElementById('app-view').style.display = 'none';
             document.getElementById('login-username').value = '';
+            
+            // ปิด Sidebar ถ้าเปิดค้างอยู่
+            document.getElementById('mainSidebar').classList.remove('show');
+            document.getElementById('sidebar-overlay').style.display = 'none';
         }
 
         function switchMenu(menuId, el) {
             if(el) {
                 document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active', 'active-head'));
                 el.classList.add(appState.role === 'head' ? 'active-head' : 'active');
+                
+                // สั่งซ่อน Hamburger Menu อัตโนมัติเมื่อกดเลือกเมนูแล้ว
+                toggleSidebar();
             }
             document.getElementById('view-record').style.display = 'none';
             document.getElementById('view-submit').style.display = 'none';
             document.getElementById('view-print').style.display = 'none';
             document.getElementById('view-head-dashboard').style.display = 'none';
             document.getElementById('view-' + menuId).style.display = 'block';
-            
-            updateSyncUI(); // โหลดหน้าใหม่ อัปเดตข้อมูลให้ตรงกับ state ล่าสุด
+            updateSyncUI();
         }
 
         function toggleInput(id, cb) { document.getElementById(id).style.display = cb.checked ? 'block' : 'none'; }
 
         // ----------------------------------------------------
-        // โซนครู: บันทึก (เรียก API)
+        // สร้างปฏิทินและ Timeline 5 วัน
+        // ----------------------------------------------------
+        function generateTimeline() {
+            const dateInput = document.getElementById('week-selector').value;
+            if (!dateInput) return;
+
+            const selectedDate = new Date(dateInput);
+            const day = selectedDate.getDay();
+            const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1); 
+            const monday = new Date(selectedDate.setDate(diff));
+
+            const options = { weekday: 'short', year: '2-digit', month: 'short', day: 'numeric' };
+            let timelineHTML = '';
+            let startStr = '', endStr = '';
+
+            for (let i = 0; i < 5; i++) {
+                let currentDay = new Date(monday);
+                currentDay.setDate(monday.getDate() + i);
+                let dateStr = currentDay.toLocaleDateString('th-TH', options);
+                let shortDateStr = currentDay.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+                
+                if (i === 0) startStr = shortDateStr;
+                if (i === 4) endStr = shortDateStr;
+
+                let statusIcon, textClass, detailBox;
+                let todayStr = now.toDateString();
+                let currentDayStr = currentDay.toDateString();
+
+                if (currentDay < now && currentDayStr !== todayStr) { 
+                    statusIcon = '<div class="timeline-icon bg-success text-white"><i class="bi bi-check-lg"></i></div>';
+                    textClass = 'text-success';
+                    detailBox = '<div class="p-2 bg-light rounded-3 small text-muted border border-success border-opacity-25">บันทึกเรียบร้อย</div>';
+                } else if (currentDayStr === todayStr) { 
+                    statusIcon = '<div class="timeline-icon bg-warning text-dark"><i class="bi bi-exclamation-lg"></i></div>';
+                    textClass = 'text-warning';
+                    if(appState.reportDetails) {
+                        statusIcon = '<div class="timeline-icon bg-success text-white"><i class="bi bi-check-lg"></i></div>';
+                        textClass = 'text-success';
+                        detailBox = `<div class="p-2 bg-light rounded-3 small text-muted border border-success border-opacity-25">${appState.reportDetails}</div>`;
+                    } else {
+                        detailBox = '<div class="p-2 bg-light rounded-3 small text-muted border border-warning border-opacity-25">รอการบันทึกข้อมูลวันนี้</div>';
+                    }
+                } else { 
+                    statusIcon = '<div class="timeline-icon bg-secondary text-white"><i class="bi bi-dash"></i></div>';
+                    textClass = 'text-secondary';
+                    detailBox = '<div class="p-2 bg-light rounded-3 small text-muted border border-secondary border-opacity-25">ยังไม่ถึงกำหนด</div>';
+                }
+
+                timelineHTML += `
+                    <div class="timeline-item">
+                        ${statusIcon}
+                        <div class="timeline-line"></div>
+                        <div class="mb-1 fw-bold ${textClass}">${dateStr}</div>
+                        ${detailBox}
+                    </div>
+                `;
+            }
+
+            document.getElementById('timeline-container').innerHTML = timelineHTML;
+            document.getElementById('week-range-display').innerHTML = `<i class="bi bi-calendar2-range text-primary"></i> รอบสัปดาห์: <b>${startStr} - ${endStr}</b>`;
+        }
+
+        // ----------------------------------------------------
+        // โซนครู: บันทึกข้อมูล
         // ----------------------------------------------------
         async function saveRecord() {
             let details = [];
@@ -493,40 +607,44 @@
             if(details.length === 0) return alert("กรุณากรอกข้อมูล");
             
             appState.reportDetails = details.join(', ');
-            
-            // ส่งข้อมูลไป Google Sheet แบบเบื้องหลัง (Background API Fetch)
+            const btn = document.getElementById('btn-save-record');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังบันทึก...';
+            btn.disabled = true;
+
             const payload = {
                 action: 'saveRecord',
                 room: appState.room,
-                date: new Date().toLocaleDateString('th-TH'),
+                date: now.toLocaleDateString('th-TH'),
                 details: appState.reportDetails,
-                stats: `มา 35 สาย 2 ลา 1 ขาด 2` // (สถิติสามารถดึงค่าจากตัวแปรสถิติของครูจริงๆ มาใส่แทนได้)
+                stats: `มา 35 สาย 2 ลา 1 ขาด 2` 
             };
             
             try {
-                fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload), 
-                    headers: {'Content-Type': 'text/plain;charset=utf-8'} // เลี่ยง CORS
-                });
-            } catch(e) { console.error("Error logging to API", e); }
+                await sendToAPI(payload);
+                alert("✅ บันทึกข้อมูลวันนี้สำเร็จ!\nระบบได้ส่งข้อมูลลงตารางเรียบร้อยแล้วครับ");
+                generateTimeline(); // อัปเดต Timeline ทันที
 
-            alert("✅ บันทึกข้อมูลวันนี้สำเร็จ!\nระบบได้ส่งข้อมูลไปยังฐานข้อมูลแล้ว");
-            
-            // อัปเดต UI วันอังคารว่ากรอกแล้ว (Optimistic UI Update)
-            document.getElementById('tl-tue').innerHTML = `
-                <div class="timeline-icon bg-success text-white"><i class="bi bi-check-lg"></i></div>
-                <div class="timeline-line"></div><div class="mb-1 fw-bold text-success">อ. 2 มิ.ย.</div>
-                <div class="p-2 bg-light rounded-3 small text-muted border border-success border-opacity-25">${appState.reportDetails}</div>`;
-            
-            document.getElementById('print-tue-row').style.display = 'table-row';
-            document.getElementById('print-tue-detail').innerText = appState.reportDetails;
-            
-            switchMenu('submit', document.querySelectorAll('.nav-link')[1]);
+                document.getElementById('print-tbody').innerHTML = `
+                    <tr>
+                        <td class="text-center text-primary">${now.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short' })}</td>
+                        <td class="text-primary">${appState.reportDetails}</td>
+                        <td class="small text-primary">มา 35 | สาย 2 | ลา 1 | ขาด 2</td>
+                    </tr>
+                `;
+                
+                // สลับไปหน้า เสนอรายงาน
+                switchMenu('submit', document.querySelectorAll('.nav-link')[1]);
+            } catch(e) { 
+                alert("⚠️ มีปัญหาการเชื่อมต่อฐานข้อมูล โปรดเช็คสิทธิ์ (Authorize) ใน Google Script"); 
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         }
 
         // ----------------------------------------------------
-        // โซนครู: ส่งรายงาน (เรียก API)
+        // โซนครู: ส่งรายงานให้หัวหน้า
         // ----------------------------------------------------
         async function teacherSubmitReport() {
             if(!appState.reportDetails) return alert("ยังไม่มีข้อมูลบันทึกในสัปดาห์นี้ครับ");
@@ -543,29 +661,24 @@
             };
 
             try {
-                await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload), 
-                    headers: {'Content-Type': 'text/plain;charset=utf-8'} 
-                });
-                
+                await sendToAPI(payload);
                 appState.isSubmitted = true;
                 appState.teacherNote = note;
                 updateSyncUI();
-                alert("ส่งรายงานให้หัวหน้าระดับตรวจสอบในฐานข้อมูลเรียบร้อยครับ");
+                alert("✅ ส่งรายงานให้หัวหน้าระดับตรวจสอบเรียบร้อยครับ");
             } catch(e) {
-                alert("มีปัญหาการเชื่อมต่อฐานข้อมูล");
+                alert("⚠️ มีปัญหาการเชื่อมต่อฐานข้อมูล");
                 btn.innerHTML = '<i class="bi bi-cursor-fill me-2"></i> กดเพื่อเสนอรายงาน';
                 btn.disabled = false;
             }
         }
 
         // ----------------------------------------------------
-        // โซนหัวหน้า: ตรวจและรับทราบ (เรียก API)
+        // โซนหัวหน้า: ตรวจและรับทราบ
         // ----------------------------------------------------
         function openReviewModal(room) {
             document.getElementById('review-room').innerText = room;
-            document.getElementById('review-tue-detail').innerText = appState.reportDetails;
+            document.getElementById('review-tue-detail').innerText = appState.reportDetails || "(ไม่มีการบันทึกข้อมูล)";
             document.getElementById('review-teacher-note').innerText = appState.teacherNote || "ไม่มีหมายเหตุ";
             document.getElementById('head-remark').value = "";
             document.getElementById('sig-preview').style.display = 'none';
@@ -574,7 +687,6 @@
             new bootstrap.Modal(document.getElementById('reviewModal')).show();
         }
 
-        // อ่านไฟล์รูปมาโชว์เป็น Base64
         function previewSignature(event) {
             const file = event.target.files[0];
             if (file) {
@@ -582,7 +694,7 @@
                 reader.onload = function(e) {
                     document.getElementById('sig-preview').src = e.target.result;
                     document.getElementById('sig-preview').style.display = 'block';
-                    appState.headSignatureData = e.target.result; // เก็บรูปภาพเป็นตัวอักษร Base64
+                    appState.headSignatureData = e.target.result; 
                 }
                 reader.readAsDataURL(file);
             }
@@ -592,7 +704,7 @@
             if(!appState.headSignatureData) return alert("กรุณาอัปโหลดรูปลายมือชื่อเพื่อรับทราบครับ");
             
             const remark = document.getElementById('head-remark').value;
-            const btn = event.currentTarget;
+            const btn = document.getElementById('btn-approve');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังบันทึก...';
             btn.disabled = true;
@@ -601,23 +713,18 @@
                 action: 'approveReport',
                 room: document.getElementById('review-room').innerText,
                 headRemark: remark,
-                signature: appState.headSignatureData // ส่งรูปภาพไปเก็บใน Sheet
+                signature: appState.headSignatureData
             };
             
             try {
-                await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload), 
-                    headers: {'Content-Type': 'text/plain;charset=utf-8'} 
-                });
-
+                await sendToAPI(payload);
                 appState.headRemark = remark;
                 appState.isApproved = true;
                 bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
                 updateSyncUI();
-                alert("✅ อนุมัติและรับทราบรายงานลงในฐานข้อมูลเรียบร้อยแล้วครับ");
+                alert("✅ อนุมัติและรับทราบรายงานเรียบร้อยแล้วครับ");
             } catch(e) {
-                alert("มีปัญหาการเชื่อมต่อฐานข้อมูล");
+                alert("⚠️ มีปัญหาการเชื่อมต่อฐานข้อมูล");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -628,7 +735,6 @@
         // ฟังก์ชันซิงค์ UI ให้ตรงกับ State เสมอ
         // ----------------------------------------------------
         function updateSyncUI() {
-            // --- 1. อัปเดตหน้า Dashboard ของหัวหน้า ---
             if(appState.role === 'head') {
                 const statusTd = document.getElementById('head-status-td');
                 const btnM21 = document.getElementById('btn-review-m21');
@@ -644,7 +750,6 @@
                 }
             }
 
-            // --- 2. อัปเดตหน้า Submit ของครู ---
             if(appState.role === 'teacher') {
                 const badge = document.getElementById('teacher-status-badge');
                 const boxAct = document.getElementById('box-submit-action');
@@ -653,7 +758,7 @@
                 if(appState.isApproved) {
                     badge.className = 'badge bg-success text-white border shadow-sm rounded-pill p-2 px-3 fs-6';
                     badge.innerHTML = '<i class="bi bi-check2-all"></i> สถานะ: รับทราบแล้ว';
-                    boxAct.style.display = 'none'; // ปิดกล่องส่ง
+                    boxAct.style.display = 'none'; 
                     sigBox.classList.add('approved');
                     sigBox.innerHTML = `
                         <i class="bi bi-check-circle-fill fs-1 text-success mb-2"></i>
@@ -670,14 +775,12 @@
                     document.getElementById('teacher-note').disabled = true;
                 }
 
-                // --- 3. อัปเดตหน้า Print ของครู ---
+                // อัปเดตหน้า Print
                 if(appState.isApproved) {
                     document.getElementById('print-head-pending').style.display = 'none';
                     document.getElementById('print-head-approved').style.display = 'block';
                     document.getElementById('print-head-sig-img').src = appState.headSignatureData;
-                    if(appState.headRemark) {
-                        document.getElementById('print-head-remark').innerText = "หมายเหตุ: " + appState.headRemark;
-                    }
+                    if(appState.headRemark) document.getElementById('print-head-remark').innerText = "หมายเหตุ: " + appState.headRemark;
                 }
             }
         }
