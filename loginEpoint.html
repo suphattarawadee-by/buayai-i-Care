@@ -299,17 +299,39 @@
 
         function fillStudentId() { document.getElementById('login-id').value = document.getElementById('login-student').value; }
 
-        // 🌟 ฟังก์ชันแปลงวันที่ให้เป็นรูปแบบเต็ม (วันศุกร์ที่ 23 มีนาคม 2569)
+        // 🌟 ฟังก์ชันแปลงวันที่ให้เป็นรูปแบบเต็ม (วันศุกร์ที่ 23 มีนาคม 2569) แบบทนทาน!
         function formatThaiDateFull(dateString) {
             if(!dateString) return "";
-            const d = new Date(dateString);
+            
+            let d = new Date(dateString);
+            
+            // กรณีระบบหลังบ้านส่งมาเป็น DD/MM/YYYY, HH:MM:SS หรือ DD/MM/YYYY
+            if (isNaN(d.getTime()) && dateString.includes('/')) {
+                const datePart = dateString.split(/[\s,]+/)[0];
+                const parts = datePart.split('/');
+                if (parts.length === 3) {
+                    // สลับเป็น YYYY-MM-DD เพื่อให้ JavaScript เข้าใจ
+                    d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                }
+            }
+
+            // ถ้ายิ่งยังแปลงไม่ได้อีก ก็คืนค่าเดิมไป
             if(isNaN(d.getTime())) return dateString; 
-            return d.toLocaleDateString('th-TH', { 
-                weekday: 'long', 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric' 
-            });
+
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const thaiDays = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+            
+            const dayName = thaiDays[d.getDay()];
+            const dateNum = d.getDate();
+            const monthName = thaiMonths[d.getMonth()];
+            let year = d.getFullYear();
+            
+            // ถ้าเป็นปี ค.ศ. (น้อยกว่า 2400) ให้บวก 543 เป็น พ.ศ.
+            if (year < 2400) {
+                year += 543;
+            }
+
+            return `วัน${dayName}ที่ ${dateNum} ${monthName} ${year}`;
         }
 
         async function handleLogin() {
