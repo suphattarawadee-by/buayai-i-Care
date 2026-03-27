@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกโฮมรูม - โรงเรียนบัวใหญ่</title>
+    <title>ระบบบันทึกโฮมรูม  buayai I Care- โรงเรียนบัวใหญ่</title>
     
     <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -105,12 +105,13 @@
     <!-- ============================================== -->
     <div id="login-view">
         <div class="login-card">
-            <i class="bi bi-shield-lock-fill text-primary" style="font-size: 4rem;"></i>
-            <h4 class="fw-bold mt-2 mb-1">ระบบโฮมรูมออนไลน์</h4>
+            <!-- 🌟 เปลี่ยนจากไอคอน เป็นโลโก้โรงเรียน -->
+            <img src="https://drive.google.com/thumbnail?id=15qRbrNRtzKrqwii83OBc8AtVywopEMlj&sz=w200" alt="โลโก้โรงเรียนบัวใหญ่" width="90" class="mb-3">
+            <h4 class="fw-bold mt-2 mb-1">ระบบโฮมรูมออนไลน์ Buayai I Care school</h4>
             <p class="text-muted small mb-4">โรงเรียนบัวใหญ่</p>
             
             <input type="text" id="login-username" class="form-control rounded-pill text-center mb-3 py-2 fw-bold" placeholder="รหัสผู้ใช้งาน (เช่น t21 หรือ m2)" autocomplete="off">
-            <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm" onclick="handleLogin()">เข้าสู่ระบบ</button>
+            <button id="btn-login" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm" onclick="handleLogin()">เข้าสู่ระบบ</button>
             <p id="login-error" class="text-danger small mt-2 mb-0" style="display: none;">ไม่พบรหัสผู้ใช้งานนี้ในระบบ</p>
         </div>
     </div>
@@ -124,7 +125,9 @@
         <div class="top-navbar">
             <div class="d-flex align-items-center">
                 <button class="hamburger-btn me-3" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
-                <h5 class="m-0 fw-bold">Buayai I-Care</h5>
+                <!-- 🌟 เพิ่มโลโก้ในแถบเมนูด้านบน -->
+                <img src="https://drive.google.com/thumbnail?id=15qRbrNRtzKrqwii83OBc8AtVywopEMlj&sz=w100" alt="โลโก้" height="35" width="35" style="object-fit: contain;" class="me-2 bg-white rounded-circle p-1">
+                <h5 class="m-0 fw-bold">Buayai I-Care School</h5>
             </div>
             <div class="d-flex align-items-center small">
                 <span class="badge bg-light text-dark rounded-pill me-2 current-room-badge" style="display: none;"></span>
@@ -316,6 +319,8 @@
                 
                 <div class="a4-paper">
                     <div class="text-center mb-4">
+                        <!-- 🌟 เพิ่มโลโก้บนหัวกระดาษรายงาน -->
+                        <img src="https://drive.google.com/thumbnail?id=15qRbrNRtzKrqwii83OBc8AtVywopEMlj&sz=w200" alt="โลโก้โรงเรียน" width="80" class="mb-3">
                         <h4 class="fw-bold">รายงานการจัดกิจกรรมโฮมรูม (Homeroom)</h4>
                         <p>ชั้นมัธยมศึกษาปีที่ <span class="current-room-text"></span> ประจำเดือน <span id="print-month-display" class="fw-bold">...</span></p>
                     </div>
@@ -335,13 +340,17 @@
                         </tbody>
                     </table>
 
-                    <div class="sign-area">
-                        <div>
-                            <div class="sign-line"></div>
-                            <p class="mb-0">( <span id="print-teacher-name">นายครู สมมติ</span> )</p>
-                            <small class="text-muted">ครูที่ปรึกษา</small>
+                    <div class="sign-area d-flex justify-content-around align-items-end w-100">
+                        <!-- 🌟 พื้นที่ลายเซ็นครู (ระบบจะแทรก 1 หรือ 2 ช่องให้อัตโนมัติ) -->
+                        <div id="print-teachers-container" class="d-flex justify-content-around flex-wrap" style="width: 60%;">
+                            <div>
+                                <div class="sign-line mt-3"></div>
+                                <p class="mb-0">( <span id="print-teacher-name">นายครู สมมติ</span> )</p>
+                                <small class="text-muted">ครูที่ปรึกษา</small>
+                            </div>
                         </div>
-                        <div id="print-head-area">
+                        
+                        <div id="print-head-area" style="width: 35%;">
                             <div id="print-head-pending">
                                 <div class="sign-line mt-3"></div>
                                 <p class="mb-0 text-muted">( รอหัวหน้าระดับรับทราบ )</p>
@@ -380,12 +389,13 @@
                             </tr>
                         </thead>
                         <tbody id="head-table-body">
+                            <!-- จำลองปุ่มให้หัวหน้ากดตรวจเอกสาร -->
                             <tr>
                                 <td class="px-4 fw-bold text-primary">ม.2/1</td>
                                 <td>ครูที่ปรึกษา ม.2/1</td>
                                 <td id="head-status-td"><span class="badge bg-secondary">ยังไม่ส่งรายงาน</span></td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-primary rounded-pill px-3" id="btn-review-m21" disabled onclick="openReviewModal('ม.2/1')">ตรวจเอกสาร</button>
+                                    <button class="btn btn-sm btn-primary rounded-pill px-3" id="btn-review-m21" onclick="openReviewModal('ม.2/1')">ตรวจเอกสาร</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -408,16 +418,18 @@
                 </div>
                 <div class="modal-body p-4 bg-light">
                     <div class="bg-white p-3 rounded-3 border mb-3 shadow-sm">
-                        <h6 class="fw-bold text-primary mb-2">บันทึกข้อมูลล่าสุด</h6>
+                        <h6 class="fw-bold text-primary mb-2">บันทึกข้อมูลในสัปดาห์นี้</h6>
                         <table class="table table-sm table-bordered small mb-0">
                             <tr class="table-light"><th width="20%">วันที่</th><th>รายการ</th></tr>
-                            <tr><td class="text-primary fw-bold">รอบปัจจุบัน</td><td id="review-tue-detail" class="text-primary">...</td></tr>
+                            <tbody id="review-table-body">
+                                <tr><td colspan="2" class="text-center py-4"><span class="spinner-border spinner-border-sm text-primary"></span> กำลังดึงข้อมูล...</td></tr>
+                            </tbody>
                         </table>
                     </div>
 
                     <div class="alert alert-info border-0 rounded-3 mb-4">
                         <b class="text-dark"><i class="bi bi-chat-left-text-fill text-primary"></i> หมายเหตุจากครูที่ปรึกษา:</b><br>
-                        <span id="review-teacher-note">ไม่มีหมายเหตุ</span>
+                        <span id="review-teacher-note">กำลังโหลด...</span>
                     </div>
 
                     <div class="p-3 bg-white border rounded-3 shadow-sm">
@@ -469,7 +481,7 @@
             }
         }
 
-        // Helper: Format Date to YYYY-MM-DD
+        // Helper: Format Date to YYYY-MM-DD safely in local timezone
         function formatISODate(dateObj) {
             const tzOffset = dateObj.getTimezoneOffset() * 60000;
             return (new Date(dateObj.getTime() - tzOffset)).toISOString().split('T')[0];
@@ -486,9 +498,6 @@
 
         const now = new Date();
 
-        // ----------------------------------------------------
-        // ฟังก์ชันเปิด/ปิด Hamburger Menu
-        // ----------------------------------------------------
         function toggleSidebar() {
             const sidebar = document.getElementById('mainSidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -502,24 +511,39 @@
         }
 
         // ----------------------------------------------------
-        // ระบบ Login และตั้งค่า UI
+        // 🚀 ฟังก์ชันเข้าสู่ระบบ: วิ่งไปเช็คและดึงชื่อจริงจากฐานข้อมูล
         // ----------------------------------------------------
-        function handleLogin() {
+        async function handleLogin() {
             const input = document.getElementById('login-username').value.trim().toLowerCase();
             const err = document.getElementById('login-error');
-            const teachers = ['t21','t22','t23','t24','t25','t26','t27','t28','t29','t210'];
+            const btn = document.getElementById('btn-login');
             
-            if (teachers.includes(input)) {
-                appState.role = 'teacher';
-                appState.room = 'ม.2/' + input.replace('t2', '');
-                appState.name = 'ครูประจำชั้น ' + appState.room;
-                setupUI();
-            } else if (input === 'm2') {
-                appState.role = 'head';
-                appState.name = 'หัวหน้าระดับชั้น ม.2';
-                setupUI();
-            } else {
+            if(!input) return;
+            
+            err.style.display = 'none';
+            let originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังเข้าสู่ระบบ...';
+            btn.disabled = true;
+
+            try {
+                const payload = { action: 'login', userId: input };
+                const res = await sendToAPI(payload);
+                
+                if (res.success) {
+                    appState.role = res.role;
+                    appState.room = res.room;
+                    appState.name = res.name; // ดึงชื่อครู หรือ หัวหน้า มาจาก Sheet เลย
+                    setupUI();
+                } else {
+                    err.innerText = res.error || "ไม่พบรหัสผู้ใช้งานนี้ในระบบ";
+                    err.style.display = 'block';
+                }
+            } catch(e) {
+                err.innerText = "⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อกับฐานข้อมูล";
                 err.style.display = 'block';
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         }
 
@@ -538,14 +562,25 @@
                 });
                 
                 document.querySelectorAll('.current-room-text').forEach(el => el.innerText = appState.room);
-                document.getElementById('print-teacher-name').innerText = appState.name;
+                
+                // 🌟 ระบบแยกชื่อครูที่ปรึกษา (รองรับ , หรือ /)
+                const teacherNames = appState.name.split(/[,/]/).map(n => n.trim()).filter(n => n);
+                let teacherSignHtml = '';
+                teacherNames.forEach(name => {
+                    teacherSignHtml += `
+                        <div class="px-2 mt-3">
+                            <div class="sign-line mt-3"></div>
+                            <p class="mb-0">( <span class="fw-bold">${name}</span> )</p>
+                            <small class="text-muted">ครูที่ปรึกษา</small>
+                        </div>
+                    `;
+                });
+                document.getElementById('print-teachers-container').innerHTML = teacherSignHtml;
                 
                 const localISOTime = formatISODate(now);
                 document.getElementById('record-date-input').value = localISOTime;
                 document.getElementById('week-selector').value = localISOTime;
-                
-                const monthStr = localISOTime.substring(0, 7); // YYYY-MM
-                document.getElementById('print-month-selector').value = monthStr;
+                document.getElementById('print-month-selector').value = localISOTime.substring(0, 7);
                 
                 fetchDailyStats();
                 generateTimeline();
@@ -557,7 +592,6 @@
                 document.querySelectorAll('.current-room-badge').forEach(el => el.style.display = 'none');
                 switchMenu('head-dashboard');
             }
-            updateSyncUI();
         }
 
         function logout() {
@@ -580,11 +614,7 @@
             document.getElementById('view-head-dashboard').style.display = 'none';
             document.getElementById('view-' + menuId).style.display = 'block';
             
-            if (menuId === 'print') {
-                generatePrintReport(); // ดึงข้อมูลใหม่เมื่อกดเข้าหน้า Print
-            }
-            
-            updateSyncUI();
+            if (menuId === 'print') { generatePrintReport(); }
         }
 
         function toggleInput(id, cb) { document.getElementById(id).style.display = cb.checked ? 'block' : 'none'; }
@@ -630,7 +660,6 @@
                     throw new Error("No stats returned");
                 }
             } catch(e) {
-                console.error("Fetch Stats Error:", e);
                 document.getElementById('stat-total-val').innerText = '?';
                 document.getElementById('stat-status-text').innerText = '⚠️ ไม่พบข้อมูลสถิติของวันนี้';
                 appState.currentStatsStr = "ไม่พบสถิติ";
@@ -644,7 +673,6 @@
             const dateInput = document.getElementById('week-selector').value;
             if (!dateInput) return;
 
-            // โชว์โหลดดิ้ง
             document.getElementById('timeline-container').innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 small text-muted">กำลังดึงข้อมูลจากฐานข้อมูล...</div></div>';
             document.getElementById('box-submit-action').style.display = 'none';
             document.getElementById('teacher-sig-box').style.display = 'none';
@@ -659,15 +687,12 @@
             let mondayISO = formatISODate(monday);
             let fridayISO = formatISODate(friday);
 
-            // ดึงข้อมูลจริงจาก Backend
             let records = [];
             try {
                 const payload = { action: 'getHomeroomData', room: appState.room, startDate: mondayISO, endDate: fridayISO };
                 const res = await sendToAPI(payload);
                 if(res && res.data) records = res.data;
-            } catch(e) { 
-                console.error(e); 
-            }
+            } catch(e) { console.error(e); }
 
             const options = { weekday: 'short', year: '2-digit', month: 'short', day: 'numeric' };
             let timelineHTML = '';
@@ -688,15 +713,13 @@
                 if (i === 0) startStr = currentDay.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
                 if (i === 4) endStr = currentDay.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
 
-                // หารายการที่ตรงกับวันที่นั้นๆ จากที่ดึงมา
-                let record = records.find(r => r.date === currentISODate);
+                let record = records.slice().reverse().find(r => r.date === currentISODate);
 
                 let statusIcon, textClass, detailBox;
                 let todayISODate = formatISODate(now);
 
                 if (record) {
                     hasAnyRecord = true;
-                    // อัปเดตสถานะของสัปดาห์ (อิงจาก record ใดๆ ในสัปดาห์นั้น)
                     if(record.status === 'Submitted') weekStatus = 'Submitted';
                     if(record.status === 'Approved') weekStatus = 'Approved';
                     
@@ -734,14 +757,12 @@
             document.getElementById('timeline-container').innerHTML = timelineHTML;
             document.getElementById('week-range-display').innerHTML = `<i class="bi bi-calendar2-range text-primary"></i> รอบสัปดาห์: <b>${startStr} - ${endStr}</b>`;
 
-            // อัปเดตสถานะให้ UI
             appState.isSubmitted = (weekStatus === 'Submitted' || weekStatus === 'Approved');
             appState.isApproved = (weekStatus === 'Approved');
             appState.teacherNote = weekTeacherNote;
             appState.headRemark = weekHeadRemark;
             appState.headSignatureData = weekSignature;
             
-            // โชว์ฟอร์มส่ง ถ้ามีข้อมูลอย่างน้อย 1 วัน
             if(hasAnyRecord) {
                 document.getElementById('box-submit-action').style.display = 'block';
                 document.getElementById('teacher-sig-box').style.display = 'block';
@@ -752,23 +773,22 @@
                 badge.innerHTML = '<i class="bi bi-info-circle"></i> สถานะ: ไม่มีข้อมูลในสัปดาห์นี้';
             }
 
-            updateSyncUI(); 
+            updateSyncUI(hasAnyRecord); 
         }
 
         // ----------------------------------------------------
         // 🚀 ดึงประวัติรายเดือน (หน้า Print)
         // ----------------------------------------------------
         async function generatePrintReport() {
-            const monthInput = document.getElementById('print-month-selector').value; // YYYY-MM
+            const monthInput = document.getElementById('print-month-selector').value; 
             if(!monthInput) return;
 
             const year = parseInt(monthInput.split('-')[0]);
-            const month = parseInt(monthInput.split('-')[1]) - 1; // 0-indexed
+            const month = parseInt(monthInput.split('-')[1]) - 1; 
             
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
 
-            // อัปเดตหัวกระดาษ
             const thaiMonthName = firstDay.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
             document.getElementById('print-month-display').innerText = thaiMonthName;
             document.getElementById('print-tbody').innerHTML = `<tr><td colspan="3" class="text-center py-5"><span class="spinner-border spinner-border-sm text-primary"></span> กำลังดึงข้อมูล...</td></tr>`;
@@ -787,7 +807,6 @@
             if (records.length === 0) {
                 tbodyHTML = `<tr><td colspan="3" class="text-center text-muted py-5">ไม่มีข้อมูลการบันทึกในเดือนที่เลือก</td></tr>`;
             } else {
-                // เรียงวันที่จากน้อยไปมาก
                 records.sort((a,b) => new Date(a.date) - new Date(b.date));
 
                 records.forEach(r => {
@@ -802,7 +821,6 @@
                         </tr>
                     `;
 
-                    // หารูปลายเซ็นของหัวหน้า (อิงจาก record ล่าสุดที่เซ็นแล้ว)
                     if (r.status === 'Approved' && r.signature) {
                         latestSignature = r.signature;
                         latestRemark = r.headRemark;
@@ -812,7 +830,6 @@
 
             document.getElementById('print-tbody').innerHTML = tbodyHTML;
 
-            // แสดงลายเซ็น
             if (latestSignature) {
                 document.getElementById('print-head-pending').style.display = 'none';
                 document.getElementById('print-head-approved').style.display = 'block';
@@ -865,7 +882,7 @@
             const payload = {
                 action: 'saveRecord',
                 room: appState.room,
-                date: recordDate, // ส่งเป็น YYYY-MM-DD
+                date: recordDate, 
                 details: appState.reportDetails,
                 stats: appState.currentStatsStr || "ไม่มีข้อมูลสถิติ"
             };
@@ -874,10 +891,8 @@
                 await sendToAPI(payload);
                 alert("✅ บันทึกข้อมูลเรียบร้อยแล้วครับ");
                 
-                // สลับไปหน้า เสนอรายงาน
                 document.getElementById('week-selector').value = recordDate;
                 switchMenu('submit', document.querySelectorAll('.nav-link')[1]);
-                // generateTimeline จะถูกเรียกอัตโนมัติใน onchange ของปฏิทิน
                 generateTimeline(); 
 
             } catch(e) { 
@@ -897,7 +912,6 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังส่ง...';
             btn.disabled = true;
             
-            // หาช่วงวันที่ของสัปดาห์ที่กำลังแสดงผลอยู่
             const dateInput = document.getElementById('week-selector').value;
             const selectedDate = new Date(dateInput);
             const day = selectedDate.getDay();
@@ -917,7 +931,7 @@
                 await sendToAPI(payload);
                 appState.isSubmitted = true;
                 appState.teacherNote = note;
-                updateSyncUI();
+                updateSyncUI(true);
                 alert("✅ ส่งรายงานให้หัวหน้าระดับตรวจสอบเรียบร้อยครับ");
             } catch(e) {
                 alert("⚠️ มีปัญหาการเชื่อมต่อฐานข้อมูล");
@@ -927,18 +941,68 @@
         }
 
         // ----------------------------------------------------
-        // โซนหัวหน้า: ตรวจและรับทราบ
+        // โซนหัวหน้า: ตรวจและรับทราบ (ดึงข้อมูลจริง)
         // ----------------------------------------------------
-        function openReviewModal(room) {
+        async function openReviewModal(room) {
             document.getElementById('review-room').innerText = room;
-            // ในการใช้งานจริง ควรดึงข้อมูลของสัปดาห์ล่าสุดที่ครูส่งมา (ตอนนี้จำลองให้ดูง่ายๆ)
-            document.getElementById('review-tue-detail').innerHTML = appState.reportDetails || "(กำลังพัฒนาระบบดึงข้อมูลให้หัวหน้าดู)";
-            document.getElementById('review-teacher-note').innerText = appState.teacherNote || "ไม่มีหมายเหตุ";
+            
+            document.getElementById('review-table-body').innerHTML = '<tr><td colspan="2" class="text-center py-4"><span class="spinner-border spinner-border-sm text-primary"></span> กำลังดึงข้อมูลจากฐานข้อมูล...</td></tr>';
+            document.getElementById('review-teacher-note').innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
             document.getElementById('head-remark').value = "";
             document.getElementById('sig-preview').style.display = 'none';
             document.getElementById('sig-upload').value = "";
             
             new bootstrap.Modal(document.getElementById('reviewModal')).show();
+
+            try {
+                const today = new Date();
+                const day = today.getDay();
+                const diff = today.getDate() - day + (day === 0 ? -6 : 1); 
+                const monday = new Date(today.setDate(diff));
+                let friday = new Date(monday); friday.setDate(monday.getDate() + 4);
+
+                const payload = {
+                    action: 'getHomeroomData',
+                    room: room,
+                    startDate: formatISODate(monday),
+                    endDate: formatISODate(friday)
+                };
+
+                const res = await sendToAPI(payload);
+                
+                if(res && res.data && res.data.length > 0) {
+                    let tbodyHTML = '';
+                    let teacherNote = '';
+                    
+                    res.data.sort((a,b) => new Date(a.date) - new Date(b.date));
+                    
+                    res.data.forEach(r => {
+                        const dateObj = new Date(r.date);
+                        const printDate = dateObj.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short', year: '2-digit' });
+                        
+                        tbodyHTML += `
+                            <tr>
+                                <td class="fw-bold text-primary align-middle">${printDate}</td>
+                                <td>
+                                    <div class="mb-1">${r.details}</div>
+                                    <div class="small fw-bold text-success border-top pt-1 mt-1">📊 ${r.stats}</div>
+                                </td>
+                            </tr>
+                        `;
+                        if(r.teacherNote) teacherNote = r.teacherNote; 
+                    });
+                    
+                    document.getElementById('review-table-body').innerHTML = tbodyHTML;
+                    document.getElementById('review-teacher-note').innerText = teacherNote || "ไม่มีหมายเหตุ";
+                } else {
+                    document.getElementById('review-table-body').innerHTML = '<tr><td colspan="2" class="text-center text-muted py-4">ไม่มีประวัติการบันทึกข้อมูลในสัปดาห์นี้</td></tr>';
+                    document.getElementById('review-teacher-note').innerText = "-";
+                }
+            } catch(e) {
+                console.error(e);
+                document.getElementById('review-table-body').innerHTML = '<tr><td colspan="2" class="text-center text-danger py-4">เกิดข้อผิดพลาดในการดึงข้อมูล</td></tr>';
+                document.getElementById('review-teacher-note').innerText = "Error";
+            }
         }
 
         function previewSignature(event) {
@@ -963,7 +1027,6 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังบันทึก...';
             btn.disabled = true;
 
-            // ส่งวันที่ของสัปดาห์ปัจจุบัน (จำลอง)
             const today = new Date();
             const day = today.getDay();
             const diff = today.getDate() - day + (day === 0 ? -6 : 1); 
@@ -984,7 +1047,7 @@
                 appState.headRemark = remark;
                 appState.isApproved = true;
                 bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
-                updateSyncUI();
+                updateSyncUI(true);
                 alert("✅ อนุมัติและรับทราบรายงานเรียบร้อยแล้วครับ");
             } catch(e) {
                 alert("⚠️ มีปัญหาการเชื่อมต่อฐานข้อมูล");
@@ -997,7 +1060,7 @@
         // ----------------------------------------------------
         // ฟังก์ชันซิงค์ UI ให้ตรงกับ State เสมอ
         // ----------------------------------------------------
-        function updateSyncUI() {
+        function updateSyncUI(hasAnyRecord = true) {
             if(appState.role === 'head') {
                 const statusTd = document.getElementById('head-status-td');
                 const btnM21 = document.getElementById('btn-review-m21');
@@ -1007,7 +1070,7 @@
                     btnM21.className = "btn btn-sm btn-outline-success rounded-pill px-3";
                     btnM21.innerText = "ตรวจสอบแล้ว";
                     btnM21.disabled = true;
-                } else if(appState.isSubmitted) {
+                } else {
                     statusTd.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> รอตรวจสอบ</span>';
                     btnM21.disabled = false;
                 }
@@ -1018,7 +1081,10 @@
                 const boxAct = document.getElementById('box-submit-action');
                 const sigBox = document.getElementById('teacher-sig-box');
 
-                if(appState.isApproved) {
+                if(!hasAnyRecord) {
+                    badge.className = 'badge bg-secondary text-white border shadow-sm rounded-pill p-2 px-3 fs-6';
+                    badge.innerHTML = '<i class="bi bi-info-circle"></i> สถานะ: ไม่มีข้อมูลในสัปดาห์นี้';
+                } else if(appState.isApproved) {
                     badge.className = 'badge bg-success text-white border shadow-sm rounded-pill p-2 px-3 fs-6';
                     badge.innerHTML = '<i class="bi bi-check2-all"></i> สถานะ: หัวหน้าระดับรับทราบแล้ว';
                     boxAct.style.display = 'none'; 
@@ -1037,9 +1103,8 @@
                     document.getElementById('btn-submit-head').className = 'btn btn-success w-100 py-2 shadow disabled';
                     document.getElementById('teacher-note').disabled = true;
                 } else {
-                    // Reset
                     badge.className = 'badge bg-warning text-dark border shadow-sm rounded-pill p-2 px-3 fs-6';
-                    badge.innerHTML = '<i class="bi bi-hourglass-split"></i> สถานะ: ยังไม่เสนอรายงาน';
+                    badge.innerHTML = '<i class="bi bi-hourglass-split"></i> สถานะ: พบข้อมูล (รอการเสนอรายงาน)';
                     document.getElementById('btn-submit-head').innerHTML = '<i class="bi bi-cursor-fill me-2"></i> กดเพื่อเสนอรายงาน';
                     document.getElementById('btn-submit-head').className = 'btn btn-warning w-100 fw-bold py-2 shadow';
                     document.getElementById('teacher-note').disabled = false;
