@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฐานข้อมูลผู้เรียน - โรงเรียนบัวใหญ่</title>
+    
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Cropper.js สำหรับตัดรูป -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <style>
+        :root {
+            --orange-main: #f97316;
+            --orange-dark: #ea580c;
+            --orange-light: #ffedd5;
+            --bg-color: #f8fafc;
+        }
+
+        body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-color); color: #1e293b; padding-bottom: 50px; }
+        
+        .header-box { background: linear-gradient(135deg, var(--orange-main), var(--orange-dark)); color: white; padding: 25px 20px; border-radius: 0 0 25px 25px; text-align: center; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2); position: relative; }
+        .admin-lock { position: absolute; top: 15px; right: 20px; color: white; font-size: 1.5rem; cursor: pointer; opacity: 0.8; transition: 0.3s; }
+        .admin-lock:hover { opacity: 1; transform: scale(1.1); }
+
+        .main-container { max-width: 600px; margin: -30px auto 0; padding: 0 15px; position: relative; z-index: 10; }
+        
+        .form-section { background: white; border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; text-align: center; }
+        
+        .form-control, .form-select { border-radius: 12px; padding: 12px 15px; border: 1px solid #cbd5e1; background-color: #f8fafc; font-weight: 600; }
+        .form-control:focus, .form-select:focus { border-color: var(--orange-main); box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15); background-color: white; }
+
+        .btn-submit { background: linear-gradient(135deg, var(--orange-main), var(--orange-dark)); color: white; border: none; border-radius: 15px; padding: 15px; font-weight: 700; font-size: 1.1rem; width: 100%; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); transition: 0.3s; }
+        .btn-submit:hover { transform: translateY(-2px); color: white; }
+        .btn-submit:disabled { background: #cbd5e1; box-shadow: none; transform: none; }
+
+        /* UI ครอปรูป */
+        .profile-upload-wrapper { position: relative; width: 150px; height: 150px; margin: 0 auto 20px; }
+        .profile-preview { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--orange-light); box-shadow: 0 5px 15px rgba(249,115,22,0.2); background: #f1f5f9; }
+        .upload-btn { position: absolute; bottom: 0; right: 0; background: var(--orange-main); color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.2s; }
+        .upload-btn:hover { transform: scale(1.1); background: var(--orange-dark); }
+        input[type="file"] { display: none; }
+        
+        #cropper-container { max-height: 400px; width: 100%; background: #000; }
+
+        /* Admin UI */
+        #admin-view { display: none; }
+        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+        .admin-tab { flex: 1; text-align: center; padding: 10px; background: white; border-radius: 12px; font-weight: bold; cursor: pointer; border: 1px solid #e2e8f0; color: #64748b; }
+        .admin-tab.active { background: #1e293b; color: white; border-color: #1e293b; }
+        .table-custom { background: white; border-radius: 15px; overflow: hidden; font-size: 0.9rem; }
+        .table-custom th { background: #f1f5f9; color: #475569; font-weight: 600; padding: 12px; }
+        .table-custom td { padding: 12px; vertical-align: middle; border-bottom: 1px solid #e2e8f0; }
+        .admin-thumb { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header-box">
+        <i class="bi bi-shield-lock-fill admin-lock" onclick="promptAdmin()"></i>
+        <img src="https://drive.google.com/thumbnail?id=15qRbrNRtzKrqwii83OBc8AtVywopEMlj&sz=w200" alt="Logo" width="70" class="bg-white rounded-circle p-1 mb-2 shadow-sm">
+        <h4 class="fw-bold mb-1">ฐานข้อมูลผู้เรียน</h4>
+        <p class="small mb-0" style="opacity: 0.9;">Buayai I Care School</p>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- หน้าจอกรอกข้อมูล (สำหรับนักเรียน) -->
+    <!-- ============================================== -->
+    <div class="main-container" id="form-view">
+        
+        <div class="form-section">
+            <h5 class="fw-bold text-dark mb-4"><i class="bi bi-person-lines-fill text-primary"></i> อัปเดตภาพถ่ายผู้เรียน</h5>
+            
+            <div class="text-start mb-3">
+                <label class="small fw-bold text-muted mb-1">1. เลือกระดับชั้น</label>
+                <select id="form-room" class="form-select text-primary" onchange="loadStudents()">
+                    <option value="">-- เลือกห้องเรียน --</option>
+                </select>
+            </div>
+            
+            <div class="text-start mb-4">
+                <label class="small fw-bold text-muted mb-1">2. เลือกชื่อ-สกุล นักเรียน</label>
+                <select id="form-student" class="form-select" disabled onchange="fillStudentId()">
+                    <option value="">-- โปรดเลือกห้องก่อน --</option>
+                </select>
+                <input type="hidden" id="form-id">
+            </div>
+
+            <div class="border-top pt-4 mt-2">
+                <label class="small fw-bold text-muted mb-3 d-block">3. อัปโหลดและปรับขนาดภาพ</label>
+                
+                <div class="profile-upload-wrapper">
+                    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="preview-img" class="profile-preview">
+                    <label for="image-upload" class="upload-btn"><i class="bi bi-camera-fill"></i></label>
+                    <input type="file" id="image-upload" accept="image/*" onchange="initCropper(event)">
+                </div>
+                <p class="small text-warning fw-bold mb-0" id="crop-status"><i class="bi bi-info-circle"></i> กดที่ไอคอนกล้องเพื่อเลือกรูป</p>
+            </div>
+        </div>
+
+        <button id="btn-save" class="btn-submit" onclick="submitData()">
+            <i class="bi bi-cloud-arrow-up-fill me-2"></i> บันทึกข้อมูลเข้าระบบ
+        </button>
+
+    </div>
+
+    <!-- ============================================== -->
+    <!-- หน้าจอ Admin (สำหรับคุณครู) -->
+    <!-- ============================================== -->
+    <div class="main-container" id="admin-view" style="max-width: 800px;">
+        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+            <h5 class="fw-bold text-dark m-0"><i class="bi bi-person-workspace text-primary"></i> ระบบจัดการรูปภาพ</h5>
+            <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="logoutAdmin()">ปิดโหมด Admin</button>
+        </div>
+
+        <div class="admin-nav">
+            <div class="admin-tab active" id="tab-report" onclick="switchAdminTab('report')"><i class="bi bi-images"></i> อัปโหลดรูปแล้ว</div>
+            <div class="admin-tab" id="tab-missing" onclick="switchAdminTab('missing')"><i class="bi bi-person-x"></i> ยังไม่อัปโหลดรูป</div>
+        </div>
+
+        <div class="form-section text-start p-3 p-md-4">
+            <div class="d-flex gap-2 mb-3">
+                <select id="admin-room" class="form-select fw-bold w-auto border-primary text-primary">
+                    <option value="">- เลือกระดับชั้น -</option>
+                </select>
+                <button class="btn btn-primary rounded-3 px-4 fw-bold" onclick="loadAdminData()"><i class="bi bi-search"></i> ค้นหา</button>
+            </div>
+
+            <!-- กล่องแสดงรายงานคนที่มีรูปแล้ว -->
+            <div id="admin-box-report">
+                <div class="table-responsive table-custom border">
+                    <table class="table mb-0">
+                        <thead><tr><th width="15%">รูป</th><th>รหัส</th><th>ชื่อ-สกุล</th></tr></thead>
+                        <tbody id="admin-report-tbody">
+                            <tr><td colspan="3" class="text-center py-4 text-muted">เลือกระดับชั้นแล้วกดค้นหา</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- กล่องแสดงคนที่ยังไม่มีรูป -->
+            <div id="admin-box-missing" style="display: none;">
+                <div class="alert alert-warning border-0 d-flex justify-content-between align-items-center mb-3">
+                    <div><b>สรุปยอด</b><br><small id="missing-summary" class="text-muted">รอการค้นหา...</small></div>
+                    <h3 class="m-0 text-danger fw-bold" id="missing-count">0</h3>
+                </div>
+                <div class="table-responsive table-custom border">
+                    <table class="table mb-0">
+                        <thead><tr><th>รหัส</th><th>รายชื่อผู้ที่ยังไม่อัปเดตรูปภาพ</th></tr></thead>
+                        <tbody id="admin-missing-tbody">
+                            <tr><td colspan="2" class="text-center py-4 text-muted">เลือกระดับชั้นแล้วกดค้นหา</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- Modal: กล่องเครื่องมือ Crop รูปภาพ -->
+    <!-- ============================================== -->
+    <div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0" style="border-radius: 20px;">
+                <div class="modal-header bg-dark text-white border-0 py-2">
+                    <h6 class="modal-title"><i class="bi bi-crop"></i> ตัดส่วนภาพที่ต้องการ</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="cancelCrop()"></button>
+                </div>
+                <div class="modal-body p-0 bg-dark text-center">
+                    <div id="cropper-container">
+                        <img id="image-to-crop" src="" style="max-width: 100%;">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center bg-dark pb-3">
+                    <button class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" onclick="cancelCrop()">ยกเลิก</button>
+                    <button class="btn btn-orange rounded-pill px-4 fw-bold" onclick="finalizeCrop()"><i class="bi bi-scissors"></i> ตัดและนำไปใช้</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ดูรูปใหญ่ Admin -->
+    <div class="modal fade" id="imgModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-header border-0 pb-0 justify-content-end">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-0">
+                    <img id="full-image" src="" alt="Proof" style="max-width: 100%; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =========================================================
+        // ⚠️ นำลิงก์ Web App API ที่ได้จาก Google Script มาใส่ตรงนี้ ⚠️
+        // =========================================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbxQsOy4ufN7dLybQ4qar3OqFSO0iibBtszmdDaxjhUUF_qRN6G8LVqtu6OxarnajhvLTA/exec"; 
+
+        // 1. สร้างตัวเลือกห้อง ม.1/1 - ม.6/10
+        window.addEventListener('DOMContentLoaded', () => {
+            let optionsHtml = '<option value="">-- เลือกระดับชั้น --</option>';
+            for (let m = 1; m <= 6; m++) {
+                for (let r = 1; r <= 10; r++) {
+                    optionsHtml += `<option value="${m}/${r}">ม.${m}/${r}</option>`;
+                }
+            }
+            document.getElementById('form-room').innerHTML = optionsHtml;
+            document.getElementById('admin-room').innerHTML = optionsHtml;
+        });
+
+        // 2. Fetch API Helper
+        async function fetchAPI(payload, btnId) {
+            let btn, originalText;
+            if(btnId) {
+                btn = document.getElementById(btnId);
+                originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังประมวลผล...';
+                btn.disabled = true;
+            }
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                return await response.json();
+            } catch (error) {
+                alert("⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+                return { error: "Connection failed" };
+            } finally {
+                if(btnId) { btn.innerHTML = originalText; btn.disabled = false; }
+            }
+        }
+
+        // --- ส่วนฟอร์ม (นักเรียน) ---
+        async function loadStudents() {
+            const room = document.getElementById('form-room').value;
+            const selectStd = document.getElementById('form-student');
+            if(!room) { selectStd.innerHTML = '<option value="">-- โปรดเลือกห้องก่อน --</option>'; selectStd.disabled = true; return; }
+            
+            selectStd.innerHTML = '<option value="">กำลังโหลดรายชื่อ...</option>'; selectStd.disabled = true;
+            const res = await fetchAPI({ action: 'getStudents', room: room }, null);
+            
+            if(res.success) {
+                let options = '<option value="">-- เลือกชื่อของคุณ --</option>';
+                res.data.forEach(std => options += `<option value="${std.id}">${std.name}</option>`);
+                selectStd.innerHTML = options; selectStd.disabled = false;
+            } else {
+                selectStd.innerHTML = '<option value="">ไม่พบข้อมูล</option>'; alert(res.error);
+            }
+        }
+
+        function fillStudentId() { document.getElementById('form-id').value = document.getElementById('form-student').value; }
+
+        // --- ระบบ ครอปรูป (Cropper.js) ---
+        let cropper;
+        let croppedBase64 = null;
+        let cropModal = null;
+
+        window.onload = function() {
+            cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+        };
+
+        function initCropper(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const image = document.getElementById('image-to-crop');
+                image.src = e.target.result;
+                
+                cropModal.show();
+
+                // รอให้ Modal เปิดเสร็จก่อนถึงเรียก Cropper
+                setTimeout(() => {
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1 / 1, // บังคับสัดส่วน 1:1 เป็นจตุรัส
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 0.9,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                    });
+                }, 200);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function finalizeCrop() {
+            if (!cropper) return;
+            // สกัดภาพที่ตัดแล้ว แปลงเป็น Base64
+            const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 }); // ย่อขนาดเพื่อไม่ให้หนักเกินไป
+            croppedBase64 = canvas.toDataURL('image/png');
+            
+            // แสดงบนหน้าจอหลัก
+            document.getElementById('preview-img').src = croppedBase64;
+            document.getElementById('crop-status').innerHTML = '<i class="bi bi-check-circle-fill text-success"></i> ภาพพร้อมใช้งานแล้ว';
+            document.getElementById('crop-status').className = 'small text-success fw-bold mb-0';
+            
+            cropModal.hide();
+            cropper.destroy();
+            cropper = null;
+        }
+
+        function cancelCrop() {
+            if(cropper) { cropper.destroy(); cropper = null; }
+            document.getElementById('image-upload').value = ""; // เคลียร์ไฟล์
+        }
+
+        // --- บันทึกข้อมูล ---
+        async function submitData() {
+            const room = document.getElementById('form-room').value;
+            const id = document.getElementById('form-id').value;
+            
+            if(!room || !id) return alert("กรุณาเลือกห้องและชื่อนักเรียน");
+            if(!croppedBase64) return alert("กรุณาเลือกและปรับขนาดรูปภาพก่อนบันทึกครับ");
+
+            // ดึงเฉพาะ Base64 เพียวๆ (ตัด data:image/png;base64, ออก)
+            const pureBase64 = croppedBase64.split(',')[1];
+
+            const payload = {
+                action: 'uploadProfile',
+                room: room, id: id, base64Image: pureBase64
+            };
+
+            const res = await fetchAPI(payload, 'btn-save');
+            if(res.success) {
+                alert("✅ " + res.message);
+                location.reload(); // รีเฟรชหน้า
+            } else {
+                alert("❌ " + res.error);
+            }
+        }
+
+        // --- Admin UI ---
+        let currentAdminMode = 'report';
+
+        function promptAdmin() {
+            const pw = prompt("กรุณากรอกรหัสผ่านสำหรับผู้ดูแลระบบ:");
+            if (pw === "8888") {
+                document.getElementById('form-view').style.display = 'none';
+                document.getElementById('admin-view').style.display = 'block';
+                document.body.style.backgroundColor = "#f1f5f9";
+            } else if (pw !== null) {
+                alert("รหัสผ่านไม่ถูกต้อง");
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('form-view').style.display = 'block';
+            document.getElementById('admin-view').style.display = 'none';
+            document.body.style.backgroundColor = "var(--bg-color)";
+        }
+
+        function switchAdminTab(mode) {
+            currentAdminMode = mode;
+            document.getElementById('tab-report').classList.remove('active');
+            document.getElementById('tab-missing').classList.remove('active');
+            document.getElementById('admin-box-report').style.display = 'none';
+            document.getElementById('admin-box-missing').style.display = 'none';
+            
+            document.getElementById('tab-' + mode).classList.add('active');
+            document.getElementById('admin-box-' + mode).style.display = 'block';
+            
+            if(document.getElementById('admin-room').value) loadAdminData();
+        }
+
+        // ฟังก์ชันแปลงลิงก์เต็ม เป็นลิงก์ Thumbnail เพื่อโชว์ในตาราง
+        function getThumbnailUrl(fullUrl) {
+            if (fullUrl && fullUrl.includes("id=")) {
+                let fileId = fullUrl.split("id=")[1].split("&")[0];
+                return "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w200";
+            } else if (fullUrl && fullUrl.includes("/d/")) {
+                let fileId = fullUrl.split("/d/")[1].split("/view")[0];
+                return "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w200";
+            }
+            return "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // รูปแทนกรณีหาไม่เจอ
+        }
+
+        function openImage(url) {
+            // โชว์รูปใหญ่สุด (เปลี่ยน w200 เป็น w1000)
+            document.getElementById('full-image').src = url.replace('w200', 'w1000');
+            new bootstrap.Modal(document.getElementById('imgModal')).show();
+        }
+
+        async function loadAdminData() {
+            const room = document.getElementById('admin-room').value;
+            if(!room) return alert("กรุณาเลือกระดับชั้นก่อนครับ");
+
+            if (currentAdminMode === 'report') {
+                document.getElementById('admin-report-tbody').innerHTML = '<tr><td colspan="3" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> กำลังดึงข้อมูล...</td></tr>';
+                const res = await fetchAPI({ action: 'getAdminReport', room: room });
+                
+                if(res.success) {
+                    if(res.data.length === 0) {
+                        document.getElementById('admin-report-tbody').innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted">ยังไม่มีผู้บันทึกข้อมูลในห้องนี้</td></tr>';
+                    } else {
+                        document.getElementById('admin-report-tbody').innerHTML = res.data.map(r => {
+                            let thumb = getThumbnailUrl(r.photo);
+                            return `
+                                <tr>
+                                    <td><img src="${thumb}" class="admin-thumb" onclick="openImage('${thumb}')" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"></td>
+                                    <td class="fw-bold">${r.id}</td>
+                                    <td>${r.name}</td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                }
+            } 
+            else if (currentAdminMode === 'missing') {
+                document.getElementById('admin-missing-tbody').innerHTML = '<tr><td colspan="2" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> กำลังประมวลผล...</td></tr>';
+                const res = await fetchAPI({ action: 'getMissingStudents', room: room });
+                
+                if(res.success) {
+                    document.getElementById('missing-summary').innerText = `นร.ทั้งหมด ${res.total} คน / อัปเดตแล้ว ${res.total - res.missingCount} คน`;
+                    document.getElementById('missing-count').innerText = res.missingCount + " คน";
+                    
+                    if(res.data.length === 0) {
+                        document.getElementById('admin-missing-tbody').innerHTML = '<tr><td colspan="2" class="text-center py-4 text-success fw-bold"><i class="bi bi-check-circle-fill"></i> อัปเดตภาพครบทุกคนแล้ว!</td></tr>';
+                    } else {
+                        document.getElementById('admin-missing-tbody').innerHTML = res.data.map(r => `
+                            <tr><td class="text-danger">${r.id}</td><td class="fw-bold">${r.name}</td></tr>
+                        `).join('');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
