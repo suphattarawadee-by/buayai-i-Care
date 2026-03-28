@@ -251,16 +251,16 @@
         </div>
     </div>
 
-    <!-- 🌟 Modal ป๊อปอัปสำหรับดูรายละเอียดการเดินทาง -->
+    <!-- 🌟 Modal ป๊อปอัปสำหรับดูรายละเอียดการเดินทาง (Dynamic Data A-T) -->
     <div class="modal fade" id="vehicleDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
                 <div class="modal-header bg-light border-0 px-4 py-3">
-                    <h5 class="fw-bold m-0 text-dark"><i class="bi bi-info-circle-fill text-primary me-2"></i>รายละเอียดการเดินทาง</h5>
+                    <h5 class="fw-bold m-0 text-dark"><i class="bi bi-info-circle-fill text-primary me-2"></i>รายละเอียดเพิ่มเติม</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4 bg-white" id="vehicleDetailBody">
-                    <!-- ข้อมูลจะถูกนำมาแทรกที่นี่ด้วย JS -->
+                    <!-- ข้อมูลไดนามิก A-T จะถูกนำมาแทรกที่นี่ด้วย JS -->
                 </div>
                 <div class="modal-footer border-0 justify-content-center pb-4">
                     <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
@@ -418,7 +418,7 @@
 
         // --- ส่วนการทำงานของ Admin ---
         let currentAdminMode = 'report';
-        let currentReportData = []; // 🌟 ตัวแปรเก็บข้อมูลไว้โชว์ในป๊อปอัป
+        let currentReportData = []; // 🌟 ตัวแปรเก็บข้อมูลไว้โชว์ในป๊อปอัปแบบเต็มพิกัด
 
         function promptAdmin() {
             const pw = prompt("กรุณากรอกรหัสผ่านสำหรับผู้ดูแลระบบ:");
@@ -467,9 +467,9 @@
                             
                             // 🌟 กำหนดสีป้าย (Badge) 3 สีตามวิธีการเดินทาง
                             let badgeClass = 'bg-secondary';
-                            if (r.method === 'ขับมาเอง') badgeClass = 'bg-primary'; // สีน้ำเงิน
-                            else if (r.method === 'รถโดยสาร/รับจ้าง') badgeClass = 'bg-warning text-dark'; // สีเหลือง
-                            else if (r.method === 'ผู้ปกครองมาส่ง') badgeClass = 'bg-success'; // สีเขียว
+                            if (r.method.includes('ขับมาเอง') || r.method.includes('ตนเอง')) badgeClass = 'bg-primary'; // สีน้ำเงิน
+                            else if (r.method.includes('โดยสาร') || r.method.includes('รับจ้าง')) badgeClass = 'bg-warning text-dark'; // สีเหลือง
+                            else if (r.method.includes('ผู้ปกครอง')) badgeClass = 'bg-success'; // สีเขียว
 
                             return `
                                 <tr>
@@ -505,31 +505,48 @@
             }
         }
 
-        // 🌟 ฟังก์ชันใหม่: แสดงหน้าต่างรายละเอียดเมื่อกดที่ป้ายสี
+        // 🌟 ฟังก์ชันใหม่: ดึงข้อมูลคอลัมน์ A-T มาโชว์อัตโนมัติ
         function showVehicleDetail(index) {
             const data = currentReportData[index];
             if (!data) return;
 
             let html = `<ul class="list-group list-group-flush rounded-3 border shadow-sm">`;
             
-            // ข้อมูลพื้นฐาน
-            html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>วิธีการเดินทาง</b> <span class="fw-bold text-primary">${data.method || '-'}</span></li>`;
-            html += `<li class="list-group-item d-flex justify-content-between align-items-center"><b>ประเภทยานพาหนะ</b> <span>${data.vType || '-'}</span></li>`;
-            
-            // รายละเอียด (ยี่ห้อ/รุ่น/สี)
-            if (data.vDetails && data.vDetails !== '-') {
-                html += `<li class="list-group-item"><b>รายละเอียดรถ</b><br><span class="text-muted small">${data.vDetails}</span></li>`;
-            }
-            
-            // ป้ายทะเบียน
-            if (data.vPlate && data.vPlate !== '-') {
-                html += `<li class="list-group-item d-flex justify-content-between align-items-center"><b>ป้ายทะเบียน</b> <span class="badge bg-dark text-white fs-6 border">${data.vPlate}</span></li>`;
-            }
-            
-            // ข้อมูลคนขับ (จะโชว์เฉพาะเวลานั่งรถรับจ้าง)
-            if (data.method === 'รถโดยสาร/รับจ้าง') {
-                html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>ชื่อคนขับ</b> <span>${data.dName || '-'}</span></li>`;
-                html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>เบอร์คนขับ</b> <a href="tel:${data.dPhone}" class="fw-bold text-decoration-none"><i class="bi bi-telephone-fill"></i> ${data.dPhone || '-'}</a></li>`;
+            // ถ้าระบบหลังบ้านถูกอัปเดตให้ส่ง extraDetails (A-T) มาแล้ว
+            if (data.extraDetails && data.extraDetails.length > 0) {
+                data.extraDetails.forEach(detail => {
+                    
+                    // ทำสีลูกเล่นให้หัวข้อสำคัญๆ อ่านง่ายขึ้น
+                    let textClass = "text-dark";
+                    if (detail.label.includes('วิธี') || detail.label.includes('เดินทาง')) {
+                        textClass = "text-primary fs-5";
+                    } else if (detail.label.includes('ทะเบียน')) {
+                        textClass = "text-danger";
+                    }
+
+                    html += `<li class="list-group-item flex-column align-items-start">
+                        <div class="text-muted small mb-1 fw-bold">${detail.label || 'ข้อมูล'}</div>
+                        <div class="fw-bold ${textClass}" style="word-break: break-word;">${detail.value}</div>
+                    </li>`;
+                });
+            } 
+            else {
+                // โค้ดเก่า (กรณีที่ยังไม่ได้อัปเดตไฟล์ Google Script)
+                html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>วิธีการเดินทาง</b> <span class="fw-bold text-primary">${data.method || '-'}</span></li>`;
+                html += `<li class="list-group-item d-flex justify-content-between align-items-center"><b>ประเภทยานพาหนะ</b> <span>${data.vType || '-'}</span></li>`;
+                
+                if (data.vDetails && data.vDetails !== '-') {
+                    html += `<li class="list-group-item"><b>รายละเอียดรถ</b><br><span class="text-muted small">${data.vDetails}</span></li>`;
+                }
+                
+                if (data.vPlate && data.vPlate !== '-') {
+                    html += `<li class="list-group-item d-flex justify-content-between align-items-center"><b>ป้ายทะเบียน</b> <span class="badge bg-dark text-white fs-6 border">${data.vPlate}</span></li>`;
+                }
+                
+                if (data.method.includes('โดยสาร') || data.method.includes('รับจ้าง')) {
+                    html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>ชื่อคนขับ</b> <span>${data.dName || '-'}</span></li>`;
+                    html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>เบอร์คนขับ</b> <a href="tel:${data.dPhone}" class="fw-bold text-decoration-none"><i class="bi bi-telephone-fill"></i> ${data.dPhone || '-'}</a></li>`;
+                }
             }
 
             html += `</ul>`;
