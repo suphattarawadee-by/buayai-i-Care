@@ -47,11 +47,24 @@
     .student-profile { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
     .student-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #f8fafc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     
-    /* 🌟 Colors (ตามที่กำหนด) */
-    .bg-present { background-color: #10b981 !important; color: white; } /* มา = เขียว */
-    .bg-leave { background-color: #0ea5e9 !important; color: white; } /* ลป/ลก = ฟ้า */
-    .bg-late { background-color: #f97316 !important; color: white; } /* สาย = ส้ม */
-    .bg-absent { background-color: #ef4444 !important; color: white; } /* ขาด = แดง */
+    /* 🌟 Colors & Blinking Button */
+    .bg-present { background-color: #10b981 !important; color: white; } 
+    .bg-absent { background-color: #ef4444 !important; color: white; } 
+    .bg-late { background-color: #f59e0b !important; color: white; } 
+    .bg-leave { background-color: #3b82f6 !important; color: white; } 
+    .bg-leave-kit { background-color: #8b5cf6 !important; color: white; } 
+
+    /* เอฟเฟกต์ปุ่มกระพริบสีฟ้า */
+    .btn-blink-blue {
+        background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        animation: pulseBlue 1.5s infinite;
+        border: none;
+    }
+    @keyframes pulseBlue {
+        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); transform: scale(1); }
+        50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); transform: scale(1.02); }
+        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); transform: scale(1); }
+    }
 
     /* 🌟 Calendar Dots */
     .calendar-box { border: 1px solid #e2e8f0; border-radius: 15px; padding: 15px; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
@@ -68,6 +81,11 @@
     .modal-overlay.show { display: flex; opacity: 1; }
     .modal-box { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; transform: translateY(-20px); transition: 0.3s; max-height: 90vh; overflow-y: auto; }
     .modal-overlay.show .modal-box { transform: translateY(0); }
+    
+    /* สไตล์กล่องโชว์รายละเอียดวัน */
+    .detail-dropdown { background: rgba(255,255,255,0.95); color: #1e293b; border-radius: 12px; padding: 10px; font-size: 0.85rem; max-height: 120px; overflow-y: auto; text-align: left; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; display: none; animation: fadeIn 0.3s ease; }
+    .card-stat { cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
+    .card-stat:active { transform: scale(0.96); }
   </style>
 </head>
 <body>
@@ -115,7 +133,7 @@
 
         <div id="view-attendance" class="view-section active">
             
-            <button class="btn w-100 rounded-pill mb-4 py-3 shadow-sm fw-bold text-white d-flex align-items-center justify-content-center" onclick="openLeaveModal()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); font-size:1.1rem;">
+            <button class="btn w-100 rounded-pill mb-4 py-3 fw-bold text-white d-flex align-items-center justify-content-center btn-blink-blue" onclick="openLeaveModal()" style="font-size:1.1rem;">
                 <i class="bi bi-envelope-paper-fill fs-4 me-2"></i> ส่งใบลาออนไลน์
             </button>
 
@@ -124,7 +142,8 @@
                     <span id="cal-month-title" class="text-primary fs-5"><i class="bi bi-calendar3"></i> เดือน</span>
                     <div style="font-size: 0.65rem; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
                         <span class="d-flex align-items-center"><span class="dot bg-present me-1"></span>มา (เขียว)</span>
-                        <span class="d-flex align-items-center"><span class="dot bg-leave me-1"></span>ลา (ฟ้า)</span>
+                        <span class="d-flex align-items-center"><span class="dot bg-leave me-1"></span>ลป (ฟ้า)</span>
+                        <span class="d-flex align-items-center"><span class="dot bg-leave-kit me-1"></span>ลก (ม่วง)</span>
                         <span class="d-flex align-items-center"><span class="dot bg-late me-1"></span>สาย (ส้ม)</span>
                         <span class="d-flex align-items-center"><span class="dot bg-absent me-1"></span>ขาด (แดง)</span>
                     </div>
@@ -142,38 +161,53 @@
 
         <div id="view-summary" class="view-section">
             <h5 class="fw-bold text-dark mb-3"><i class="bi bi-pie-chart-fill text-primary"></i> สรุปสถิติการมาเรียน</h5>
+            
             <div class="row g-3 text-center">
                 <div class="col-6">
-                    <div class="card border-0 bg-present shadow-sm p-3 rounded-4 h-100">
-                        <div class="small fw-bold opacity-75 mb-1">มาเรียนปกติ</div>
-                        <h2 class="fw-bold m-0" id="sum-ma">0</h2><small>วัน</small>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="card border-0 bg-absent shadow-sm p-3 rounded-4 h-100">
+                    <div class="card card-stat border-0 bg-absent shadow-sm p-3 rounded-4 h-100" onclick="toggleDetail('khad')">
                         <div class="small fw-bold opacity-75 mb-1">ขาดเรียน</div>
                         <h2 class="fw-bold m-0" id="sum-khad">0</h2><small>วัน</small>
+                        <div class="mt-2 pt-2 border-top border-light border-opacity-25">
+                            <span class="badge bg-white text-danger rounded-pill shadow-sm px-3 py-1"><i class="bi bi-search"></i> รายละเอียด</span>
+                        </div>
+                        <div id="detail-khad" class="detail-dropdown"></div>
                     </div>
                 </div>
+                
                 <div class="col-6">
-                    <div class="card border-0 bg-late shadow-sm p-3 rounded-4 h-100">
+                    <div class="card card-stat border-0 bg-late shadow-sm p-3 rounded-4 h-100" onclick="toggleDetail('sai')">
                         <div class="small fw-bold opacity-75 mb-1">มาสาย</div>
                         <h2 class="fw-bold m-0" id="sum-sai">0</h2><small>วัน</small>
+                        <div class="mt-2 pt-2 border-top border-light border-opacity-25">
+                            <span class="badge bg-white text-warning rounded-pill shadow-sm px-3 py-1"><i class="bi bi-search"></i> รายละเอียด</span>
+                        </div>
+                        <div id="detail-sai" class="detail-dropdown"></div>
                     </div>
                 </div>
+                
                 <div class="col-6">
-                    <div class="card border-0 bg-leave shadow-sm p-3 rounded-4 h-100">
+                    <div class="card card-stat border-0 bg-leave shadow-sm p-3 rounded-4 h-100" onclick="toggleDetail('lp')">
                         <div class="small fw-bold opacity-75 mb-1">ลาป่วย (ลป)</div>
                         <h2 class="fw-bold m-0" id="sum-lp">0</h2><small>วัน</small>
+                        <div class="mt-2 pt-2 border-top border-light border-opacity-25">
+                            <span class="badge bg-white text-primary rounded-pill shadow-sm px-3 py-1"><i class="bi bi-search"></i> รายละเอียด</span>
+                        </div>
+                        <div id="detail-lp" class="detail-dropdown"></div>
                     </div>
                 </div>
-                <div class="col-12">
-                    <div class="card border-0 bg-leave shadow-sm p-3 rounded-4 h-100">
+                
+                <div class="col-6">
+                    <div class="card card-stat border-0 bg-leave-kit shadow-sm p-3 rounded-4 h-100" onclick="toggleDetail('lk')">
                         <div class="small fw-bold opacity-75 mb-1">ลากิจ (ลก)</div>
                         <h2 class="fw-bold m-0" id="sum-lk">0</h2><small>วัน</small>
+                        <div class="mt-2 pt-2 border-top border-light border-opacity-25">
+                            <span class="badge bg-white text-dark rounded-pill shadow-sm px-3 py-1" style="color: #8b5cf6 !important;"><i class="bi bi-search"></i> รายละเอียด</span>
+                        </div>
+                        <div id="detail-lk" class="detail-dropdown"></div>
                     </div>
                 </div>
             </div>
+            <p class="text-center small text-muted mt-3"><i class="bi bi-hand-index-thumb"></i> แตะที่กล่องเพื่อดูวันที่</p>
         </div>
 
         <div id="view-academic" class="view-section">
@@ -237,7 +271,7 @@
       <div class="form-check mb-4 bg-light p-3 rounded-3 border" style="padding-left: 2.5rem !important;">
           <input class="form-check-input mt-1" type="checkbox" id="leaveConsent" style="transform: scale(1.3); margin-left: -1.5rem;">
           <label class="form-check-label text-danger fw-bold lh-sm" for="leaveConsent" style="font-size: 0.8rem; cursor: pointer;">
-              ข้าพเจ้าทราบว่า การลากิจ ลาป่วย ครั้งด้วยมีเหตุจำเป็น และเข้าใจว่าการลาบ่อยครั้งเป็นสาเหตุให้มีนักเรียนมีเวลาเรียนไม่เพียงพอ (มส) ได้ทั้งนี้จะกำชับให้นักเรียนติดตามภาระงานอย่างใกล้ชิด
+              ข้าพเจ้าทราบว่า การลากิจ ลาป่วย แต่ละครั้งมีเหตุจำเป็น และเข้าใจว่าการลาบ่อยครั้งเป็นสาเหตุให้มีนักเรียนมีเวลาเรียนไม่เพียงพอ (มส) ได้ ทั้งนี้จะกำชับให้นักเรียนติดตามภาระงานอย่างใกล้ชิด
           </label>
       </div>
 
@@ -249,7 +283,7 @@
 
   <script>
     // ========================================================
-    // ⚠️ ใส่ URL Web App API ฝั่งหลังบ้าน (Code.gs ล่าสุด) ตรงนี้ ⚠️
+    // ⚠️ ใส่ URL Web App API ฝั่งหลังบ้านของคุณครูตรงนี้ ⚠️
     // ========================================================
     const API_URL = "https://script.google.com/macros/s/AKfycbxs3qow4kWPvJkmeBD_cNuQapgwtuUSI7noUiFRxizGEdZRijuytZqHIUC1geOy9Q7N/exec"; 
 
@@ -267,6 +301,8 @@
         document.getElementById('view-' + viewId).classList.add('active');
         document.querySelectorAll('.nav-menu li').forEach(el => el.classList.remove('active'));
         document.getElementById('nav-' + viewId).classList.add('active');
+        // ปิดกล่องรายละเอียดทุกครั้งที่เปลี่ยนหน้า
+        ['khad', 'sai', 'lp', 'lk'].forEach(t => document.getElementById('detail-'+t).style.display = 'none');
         toggleSidebar();
     }
 
@@ -277,6 +313,12 @@
         document.getElementById("search-section").style.display = "block"; 
         toggleSidebar(); 
         currentStudentData = null;
+    }
+
+    // ฟังก์ชันซ่อน/แสดงรายละเอียดวันที่
+    function toggleDetail(type) {
+        const el = document.getElementById('detail-' + type);
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
     }
 
     // --- Modal Alert ---
@@ -325,7 +367,7 @@
       }
     }
 
-    // --- จัดการข้อมูลและสถิติ ---
+    // --- จัดการข้อมูลและสถิติ (อัปเดตให้ดึงวันที่แยกใส่กล่อง) ---
     function renderResult(roomName, imageUrl) {
       document.getElementById("res-name").innerText = currentStudentData.name;
       document.getElementById("res-id").innerText = "รหัส: " + currentStudentData.id + " | ชั้น " + roomName;
@@ -336,19 +378,20 @@
         iconBox.innerHTML = fileId ? `<img src="https://drive.google.com/thumbnail?id=${fileId}&sz=w300-h300" class="student-avatar">` : `<i class="bi bi-person-circle text-muted" style="font-size: 6rem;"></i>`;
       } else { iconBox.innerHTML = `<i class="bi bi-person-circle text-muted" style="font-size: 6rem;"></i>`; }
 
-      let sums = { 'มา':0, 'ขาด':0, 'สาย':0, 'ลป':0, 'ลก':0 };
+      // เตรียมกล่องแยกข้อมูลวันที่
+      let datesMap = { 'khad': [], 'sai': [], 'lp': [], 'lk': [] };
 
       if(attendanceRecords.length === 0) {
           document.getElementById("latest-status-box").style.display = "none";
           document.getElementById("calendar-grid").innerHTML = "<div style='grid-column: span 7; color:#94a3b8;'>ไม่พบประวัติการเข้าแถว</div>";
       } else {
+          // เก็บสถิติและวันที่
           attendanceRecords.forEach(r => {
-              if(r.status === 'มา') sums['มา']++;
-              else if(r.status === 'ขาด') sums['ขาด']++;
-              else if(r.status === 'สาย') sums['สาย']++;
-              else if(r.status === 'ลป') sums['ลป']++;
-              else if(r.status === 'ลก') sums['ลก']++;
-              else sums['ลป']++; 
+              if(r.status === 'ขาด') datesMap['khad'].push(r.date);
+              else if(r.status === 'สาย') datesMap['sai'].push(r.date);
+              else if(r.status === 'ลป') datesMap['lp'].push(r.date);
+              else if(r.status === 'ลก') datesMap['lk'].push(r.date);
+              else if(r.status === 'ลา') datesMap['lp'].push(r.date); // กรณีระบบเก่า
           });
 
           document.getElementById("latest-status-box").style.display = "block";
@@ -357,21 +400,30 @@
           document.getElementById("latest-status-text").innerText = latest.status;
           document.getElementById("latest-time-text").innerText = latest.time;
           
-          // เปลี่ยนสีกล่องล่าสุด
-          let colorClass = latest.status === "มา" ? "bg-present" : latest.status === "ขาด" ? "bg-absent" : latest.status === "สาย" ? "bg-late" : "bg-leave";
+          let colorClass = latest.status === "มา" ? "bg-present" : latest.status === "ขาด" ? "bg-absent" : latest.status === "สาย" ? "bg-late" : latest.status === "ลก" ? "bg-leave-kit" : "bg-leave";
           document.getElementById("latest-status-box").className = "card border-0 shadow-sm rounded-4 p-4 text-center text-white mb-3 " + colorClass;
 
           generateCalendar();
       }
 
-      document.getElementById('sum-ma').innerText = sums['มา'];
-      document.getElementById('sum-khad').innerText = sums['ขาด'];
-      document.getElementById('sum-sai').innerText = sums['สาย'];
-      document.getElementById('sum-lp').innerText = sums['ลป'];
-      document.getElementById('sum-lk').innerText = sums['ลก'];
+      // ใส่ตัวเลขจำนวนวัน
+      document.getElementById('sum-khad').innerText = datesMap['khad'].length;
+      document.getElementById('sum-sai').innerText = datesMap['sai'].length;
+      document.getElementById('sum-lp').innerText = datesMap['lp'].length;
+      document.getElementById('sum-lk').innerText = datesMap['lk'].length;
+
+      // แทรกรายการวันที่เข้าไปในกล่องรายละเอียด (ซ่อนไว้รอคลิก)
+      const buildDetailHTML = (arr, iconColor) => arr.length > 0 
+        ? arr.map(d => `<i class="bi bi-check2 ${iconColor} fw-bold"></i> ${d}`).join('<br>') 
+        : '<div class="text-center text-muted opacity-50 small">- ไม่มีข้อมูล -</div>';
+
+      document.getElementById('detail-khad').innerHTML = buildDetailHTML(datesMap['khad'], 'text-danger');
+      document.getElementById('detail-sai').innerHTML = buildDetailHTML(datesMap['sai'], 'text-warning');
+      document.getElementById('detail-lp').innerHTML = buildDetailHTML(datesMap['lp'], 'text-primary');
+      document.getElementById('detail-lk').innerHTML = buildDetailHTML(datesMap['lk'], 'text-dark');
     }
 
-    // --- สร้างปฏิทินจุดสี (เขียว=มา, ฟ้า=ลป/ลก, ส้ม=สาย, แดง=ขาด) ---
+    // --- สร้างปฏิทินจุดสี ---
     function generateCalendar() {
         if(attendanceRecords.length === 0) return;
         const latestDateArr = attendanceRecords[attendanceRecords.length - 1].date.split('/');
@@ -397,8 +449,7 @@
         for(let d=1; d<=daysInMonth; d++) {
             let dotHtml = "";
             if(statusMap[d]) {
-                // 🌟 กำหนดจุดสีตามที่คุณครูสั่ง
-                let colorClass = statusMap[d] === "มา" ? "bg-present" : statusMap[d] === "ขาด" ? "bg-absent" : statusMap[d] === "สาย" ? "bg-late" : "bg-leave";
+                let colorClass = statusMap[d] === "มา" ? "bg-present" : statusMap[d] === "ขาด" ? "bg-absent" : statusMap[d] === "สาย" ? "bg-late" : statusMap[d] === "ลก" ? "bg-leave-kit" : "bg-leave";
                 dotHtml = `<div class="dot ${colorClass}"></div>`;
             }
             grid.innerHTML += `<div class="cal-cell">${d}${dotHtml}</div>`;
@@ -423,7 +474,7 @@
         const rect = canvas.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return { x: clientX - rect.left, y: clientY - rect.top };
+        return { x: clientX - rect.left, y: clientY - top };
     }
     
     function startDraw(e) { e.preventDefault(); isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
