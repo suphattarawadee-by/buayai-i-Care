@@ -52,7 +52,8 @@
     <div id="login-page">
         <div class="d-flex align-items-center justify-content-center" style="height: 100vh; background: var(--primary-dark);">
             <div class="card p-4 shadow-lg border-0 text-center" style="width: 90%; max-width: 380px; border-radius: 25px;">
-                <i class="bi bi-shield-lock-fill text-primary mb-3" style="font-size: 4rem;"></i>
+                <img src="https://drive.google.com/thumbnail?id=15qRbrNRtzKrqwii83OBc8AtVywopEMlj&sz=w200" alt="Logo" width="110" class="bg-white rounded-circle p-2 mx-auto mb-3 shadow-sm" style="border: 3px solid #f8fafc;">
+                
                 <h4 class="fw-bold mb-4">Buayai I-Care Teacher</h4>
                 <input type="text" id="username" class="form-control rounded-pill mb-3 text-center py-2" placeholder="ชื่อผู้ใช้งาน">
                 <input type="password" id="password" class="form-control rounded-pill mb-4 text-center py-2" placeholder="รหัสผ่าน">
@@ -82,15 +83,21 @@
         </div>
 
         <div class="main-content" id="mainContent">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            
+            <div class="text-center mb-3">
+                <img src="https://drive.google.com/thumbnail?id=15qRbrNRtzKrqwii83OBc8AtVywopEMlj&sz=w200" alt="Logo" width="70" class="bg-white rounded-circle p-1 shadow-sm border">
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                 <div>
                     <h3 id="page-title" class="fw-bold m-0 text-dark">เช็คชื่อนักเรียน</h3>
-                    <div class="mt-2">
+                    
+                    <div class="mt-2" id="date-picker-container">
                         <label class="small fw-bold text-muted mb-1"><i class="bi bi-calendar-event"></i> เลือกวันที่เช็คชื่อ:</label>
                         <input type="date" id="checkin-date" class="form-control rounded-pill border-primary shadow-sm" style="max-width: 200px; font-weight: bold;">
                     </div>
                 </div>
-                <span class="badge bg-white text-primary shadow-sm p-3 rounded-pill fw-bold" id="class-display">-</span>
+                <span class="badge bg-white text-primary shadow-sm p-3 rounded-pill fw-bold" id="class-display" style="font-size: 1rem;">-</span>
             </div>
 
             <div id="content-check-in">
@@ -180,7 +187,6 @@
         let currentUser = {}, studentData = [], pendingData = [], lastStat = null;
         google.charts.load('current', {'packages':['corechart']});
 
-        // 🌟 Helper Function ยิง API ไปหา Backend
         async function fetchAPI(payload) {
             try {
                 const response = await fetch(API_URL, {
@@ -204,10 +210,18 @@
         function switchMenu(m, el) { 
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
+            
             document.getElementById('content-check-in').style.display = m==='check-in'?'block':'none';
             document.getElementById('content-report').style.display = m==='report'?'block':'none';
             document.getElementById('content-print').style.display = m==='print'?'block':'none';
             document.getElementById('page-title').innerText = el.innerText;
+            
+            // ซ่อน/แสดง กล่องปฏิทินเลือกวันที่
+            const datePicker = document.getElementById('date-picker-container');
+            if (datePicker) {
+                datePicker.style.display = (m === 'check-in') ? 'block' : 'none';
+            }
+
             if(m === 'report') loadAdvancedStats();
             if(window.innerWidth <= 768) toggleSidebar();
         }
@@ -221,7 +235,6 @@
             new bootstrap.Modal(document.getElementById('customAlertModal')).show();
         }
 
-        // --- ระบบ API ---
         async function runLogin() {
             const u = document.getElementById('username').value, p = document.getElementById('password').value;
             if(!u || !p) return showCustomAlert("ข้อมูลไม่ครบ", "กรุณากรอก User และ Password", "warning");
@@ -238,7 +251,6 @@
                 document.getElementById('user-display').innerText = "ผู้ใช้: " + res.name;
                 document.getElementById('class-display').innerText = "ห้อง " + res.assignedClass;
                 
-                // 🌟 เซ็ตค่าตั้งต้นปฏิทินให้เป็นวันปัจจุบัน (YYYY-MM-DD)
                 const today = new Date();
                 const offset = today.getTimezoneOffset() * 60000;
                 const localISOTime = (new Date(today - offset)).toISOString().split('T')[0];
@@ -330,7 +342,6 @@
             const btn = document.getElementById('btn-confirm');
             btn.disabled = true; btn.innerHTML = "กำลังบันทึก...";
             
-            // 🌟 ดึงค่าวันที่ที่คุณครูเลือก ส่งไปพร้อมกับการเซฟ
             const checkDate = document.getElementById('checkin-date').value;
             
             const res = await fetchAPI({ 
