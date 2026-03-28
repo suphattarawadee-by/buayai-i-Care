@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ฐานข้อมูลผู้เรียน - โรงเรียนบัวใหญ่</title>
+    <title>ฐานข้อมูลผู้เรียน ระบบ Buayai- i- Care- โรงเรียนบัวใหญ่</title>
     
     <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -45,8 +45,6 @@
         .upload-btn { position: absolute; bottom: 0; right: 0; background: var(--orange-main); color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.2s; }
         .upload-btn:hover { transform: scale(1.1); background: var(--orange-dark); }
         input[type="file"] { display: none; }
-        
-        #cropper-container { max-height: 400px; width: 100%; background: #000; }
 
         /* Admin UI */
         #admin-view { display: none; }
@@ -101,6 +99,18 @@
                     <input type="file" id="image-upload" accept="image/*" onchange="initCropper(event)">
                 </div>
                 <p class="small text-warning fw-bold mb-0" id="crop-status"><i class="bi bi-info-circle"></i> กดที่ไอคอนกล้องเพื่อเลือกรูป</p>
+
+                <!-- 🌟 เพิ่มส่วน PDPA (นโยบายคุ้มครองข้อมูลส่วนบุคคล) -->
+                <div class="border-top pt-3 mt-4 text-start">
+                    <div class="form-check p-3 bg-light rounded-3 border" style="padding-left: 2.5rem !important;">
+                        <input class="form-check-input mt-1" type="checkbox" id="pdpa-consent" style="transform: scale(1.3); margin-left: -1.8rem; cursor: pointer;">
+                        <label class="form-check-label small lh-sm" for="pdpa-consent" style="cursor: pointer;">
+                            <span class="fw-bold text-danger"><i class="bi bi-shield-check"></i> นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)</span><br>
+                            <span class="text-muted" style="font-size: 0.8rem;">ข้าพเจ้ายินยอมให้โรงเรียนบันทึกภาพและข้อมูลส่วนตัว เพื่อนำไปใช้ในงานการศึกษา เช่น งานประชาสัมพันธ์, ระบบทะเบียน, งานพยาบาล และระบบดูแลช่วยเหลือผู้เรียน</span>
+                        </label>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -163,23 +173,25 @@
     </div>
 
     <!-- ============================================== -->
-    <!-- Modal: กล่องเครื่องมือ Crop รูปภาพ -->
+    <!-- 🌟 Modal: กล่องเครื่องมือ Crop รูปภาพ (แก้ไขให้แสดงปุ่มชัดเจน) -->
     <!-- ============================================== -->
-    <div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0" style="border-radius: 20px;">
-                <div class="modal-header bg-dark text-white border-0 py-2">
-                    <h6 class="modal-title"><i class="bi bi-crop"></i> ตัดส่วนภาพที่ต้องการ</h6>
+    <div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content border-0 bg-dark text-white">
+                <div class="modal-header border-0 py-3">
+                    <h6 class="modal-title fw-bold"><i class="bi bi-crop"></i> ขยับ/ย่อ/ขยาย เน้นภาพใบหน้าให้ชัดเจน</h6>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="cancelCrop()"></button>
                 </div>
-                <div class="modal-body p-0 bg-dark text-center">
-                    <div id="cropper-container">
-                        <img id="image-to-crop" src="" style="max-width: 100%;">
+                <div class="modal-body p-0 d-flex align-items-center justify-content-center" style="height: 60vh; overflow: hidden;">
+                    <div id="cropper-container" style="width: 100%; height: 100%;">
+                        <img id="image-to-crop" src="" style="max-width: 100%; display: block;">
                     </div>
                 </div>
-                <div class="modal-footer border-0 justify-content-center bg-dark pb-3">
-                    <button class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" onclick="cancelCrop()">ยกเลิก</button>
-                    <button class="btn btn-orange rounded-pill px-4 fw-bold" onclick="finalizeCrop()"><i class="bi bi-scissors"></i> ตัดและนำไปใช้</button>
+                <div class="modal-footer border-0 justify-content-center pb-4 pt-3 bg-dark">
+                    <button class="btn btn-light rounded-pill px-4 py-2" data-bs-dismiss="modal" onclick="cancelCrop()">ยกเลิก</button>
+                    <button class="btn btn-warning rounded-pill px-4 py-2 fw-bold shadow-lg" onclick="finalizeCrop()" style="font-size: 1.1rem; color: #000;">
+                        <i class="bi bi-scissors"></i> ตัดรูปและนำไปใช้
+                    </button>
                 </div>
             </div>
         </div>
@@ -328,9 +340,11 @@
         async function submitData() {
             const room = document.getElementById('form-room').value;
             const id = document.getElementById('form-id').value;
+            const pdpaConsent = document.getElementById('pdpa-consent').checked;
             
             if(!room || !id) return alert("กรุณาเลือกห้องและชื่อนักเรียน");
             if(!croppedBase64) return alert("กรุณาเลือกและปรับขนาดรูปภาพก่อนบันทึกครับ");
+            if(!pdpaConsent) return alert("กรุณาติ๊กช่อง ☑️ ยินยอมนโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA) ก่อนบันทึกข้อมูลครับ");
 
             // ดึงเฉพาะ Base64 เพียวๆ (ตัด data:image/png;base64, ออก)
             const pureBase64 = croppedBase64.split(',')[1];
