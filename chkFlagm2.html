@@ -65,7 +65,11 @@
     <div id="app-interface" style="display: none;">
         
         <div class="sidebar d-flex flex-column p-3" id="mainSidebar">
-            <div class="text-center py-4"><h5 class="fw-bold text-info">โรงเรียนบัวใหญ่</h5></div>
+            <div class="text-center py-4">
+                <img src="https://drive.google.com/thumbnail?id=15qRbrNRtzKrqwii83OBc8AtVywopEMlj&sz=w200" alt="Logo" width="80" class="bg-white rounded-circle p-1 mb-2 shadow-sm">
+                <h5 class="fw-bold text-info">โรงเรียนบัวใหญ่</h5>
+            </div>
+            
             <div class="nav flex-column mb-auto">
                 <a class="nav-link active" onclick="switchMenu('check-in', this)"><i class="bi bi-person-check me-2"></i> เช็คชื่อนักเรียน</a>
                 <a class="nav-link" onclick="switchMenu('report', this)"><i class="bi bi-pie-chart me-2"></i> สถิติภาพรวม</a>
@@ -81,7 +85,10 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h3 id="page-title" class="fw-bold m-0 text-dark">เช็คชื่อนักเรียน</h3>
-                    <p class="text-muted small mb-0" id="date-display"></p>
+                    <div class="mt-2">
+                        <label class="small fw-bold text-muted mb-1"><i class="bi bi-calendar-event"></i> เลือกวันที่เช็คชื่อ:</label>
+                        <input type="date" id="checkin-date" class="form-control rounded-pill border-primary shadow-sm" style="max-width: 200px; font-weight: bold;">
+                    </div>
                 </div>
                 <span class="badge bg-white text-primary shadow-sm p-3 rounded-pill fw-bold" id="class-display">-</span>
             </div>
@@ -230,7 +237,13 @@
                 document.getElementById('login-page').style.display='none'; document.getElementById('app-interface').style.display='block';
                 document.getElementById('user-display').innerText = "ผู้ใช้: " + res.name;
                 document.getElementById('class-display').innerText = "ห้อง " + res.assignedClass;
-                document.getElementById('date-display').innerText = new Date().toLocaleDateString('th-TH', {dateStyle:'full'});
+                
+                // 🌟 เซ็ตค่าตั้งต้นปฏิทินให้เป็นวันปัจจุบัน (YYYY-MM-DD)
+                const today = new Date();
+                const offset = today.getTimezoneOffset() * 60000;
+                const localISOTime = (new Date(today - offset)).toISOString().split('T')[0];
+                document.getElementById('checkin-date').value = localISOTime;
+
                 loadStudents();
             } else { 
                 btn.disabled = false; btn.innerHTML = "เข้าสู่ระบบ"; 
@@ -317,7 +330,16 @@
             const btn = document.getElementById('btn-confirm');
             btn.disabled = true; btn.innerHTML = "กำลังบันทึก...";
             
-            const res = await fetchAPI({ action: 'saveAttendance', className: currentUser.assignedClass, list: pendingData, teacher: currentUser.name });
+            // 🌟 ดึงค่าวันที่ที่คุณครูเลือก ส่งไปพร้อมกับการเซฟ
+            const checkDate = document.getElementById('checkin-date').value;
+            
+            const res = await fetchAPI({ 
+                action: 'saveAttendance', 
+                className: currentUser.assignedClass, 
+                list: pendingData, 
+                teacher: currentUser.name,
+                checkDate: checkDate 
+            });
             
             bootstrap.Modal.getInstance(document.getElementById('summaryModal')).hide();
             btn.disabled = false; btn.innerHTML = "ยืนยันบันทึก";
