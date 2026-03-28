@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ฐานข้อมูลยานพาหนะ - Baayai i Care School</title>
+    <title>ระบบฐานข้อมูลยานพาหนะ Buayai -i Care school โรงเรียนบัวใหญ่</title>
     
     <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -61,8 +61,8 @@
     <div class="header-box">
         <i class="bi bi-shield-lock-fill admin-lock" onclick="promptAdmin()"></i>
         <i class="bi bi-car-front-fill" style="font-size: 2.5rem;"></i>
-        <h4 class="fw-bold mt-2 mb-1">ฐานข้อมูลยานพาหนะ Buayai i Care School </h4>
-        <p class="small mb-0" style="opacity: 0.9;">งานยานพาหนะและความปลอดภัยในสถานศึกษา โรงเรียนบัวใหญ่</p>
+        <h4 class="fw-bold mt-2 mb-1">ระบบฐานข้อมูลยานพาหนะ Bauyai I care school</h4>
+        <p class="small mb-0" style="opacity: 0.9;">งานยานพานหะและความปลอดภัยในสถานศึกษา โรงเรียนบัวใหญ่</p>
     </div>
 
     <!-- ============================================== -->
@@ -251,12 +251,31 @@
         </div>
     </div>
 
+    <!-- 🌟 Modal ป๊อปอัปสำหรับดูรายละเอียดการเดินทาง -->
+    <div class="modal fade" id="vehicleDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header bg-light border-0 px-4 py-3">
+                    <h5 class="fw-bold m-0 text-dark"><i class="bi bi-info-circle-fill text-primary me-2"></i>รายละเอียดการเดินทาง</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 bg-white" id="vehicleDetailBody">
+                    <!-- ข้อมูลจะถูกนำมาแทรกที่นี่ด้วย JS -->
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // =========================================================
         // ⚠️ นำลิงก์ Web App API ที่ได้จาก Google Script มาใส่ตรงนี้ ⚠️
         // =========================================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbz_uaVN8T0h8K-5W5err89LWnpiVP0-Yo7NcXt45Sq2dclKOS_aQV0K-mrqPN4yoqUp/exec"; 
+        const API_URL = "ใส่_ลิงก์_WEB_APP_ตรงนี้"; 
 
         // 1. สร้างตัวเลือกห้อง ม.1/1 - ม.6/10 อัตโนมัติ
         window.addEventListener('DOMContentLoaded', () => {
@@ -399,6 +418,7 @@
 
         // --- ส่วนการทำงานของ Admin ---
         let currentAdminMode = 'report';
+        let currentReportData = []; // 🌟 ตัวแปรเก็บข้อมูลไว้โชว์ในป๊อปอัป
 
         function promptAdmin() {
             const pw = prompt("กรุณากรอกรหัสผ่านสำหรับผู้ดูแลระบบ:");
@@ -438,16 +458,32 @@
                 document.getElementById('admin-report-tbody').innerHTML = '<tr><td colspan="5" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> กำลังดึงข้อมูล...</td></tr>';
                 const res = await fetchAPI({ action: 'getAdminReport', room: room });
                 if(res.success) {
+                    currentReportData = res.data; // 🌟 เก็บข้อมูลลงตัวแปร
+
                     if(res.data.length === 0) {
                         document.getElementById('admin-report-tbody').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">ยังไม่มีผู้บันทึกข้อมูลในห้องนี้</td></tr>';
                     } else {
-                        document.getElementById('admin-report-tbody').innerHTML = res.data.map(r => `
-                            <tr>
-                                <td>${r.id}</td><td><b>${r.name}</b></td>
-                                <td><span class="badge bg-primary rounded-pill">${r.method}</span></td>
-                                <td><small>${r.vehicle || '-'}</small></td><td>${r.stdPhone || '-'}</td>
-                            </tr>
-                        `).join('');
+                        document.getElementById('admin-report-tbody').innerHTML = res.data.map((r, index) => {
+                            
+                            // 🌟 กำหนดสีป้าย (Badge) 3 สีตามวิธีการเดินทาง
+                            let badgeClass = 'bg-secondary';
+                            if (r.method === 'ขับมาเอง') badgeClass = 'bg-primary'; // สีน้ำเงิน
+                            else if (r.method === 'รถโดยสาร/รับจ้าง') badgeClass = 'bg-warning text-dark'; // สีเหลือง
+                            else if (r.method === 'ผู้ปกครองมาส่ง') badgeClass = 'bg-success'; // สีเขียว
+
+                            return `
+                                <tr>
+                                    <td>${r.id}</td><td><b>${r.name}</b></td>
+                                    <td>
+                                        <span class="badge ${badgeClass} rounded-pill shadow-sm" style="cursor:pointer; font-size: 0.85rem;" onclick="showVehicleDetail(${index})">
+                                            ${r.method} <i class="bi bi-hand-index ms-1"></i>
+                                        </span>
+                                    </td>
+                                    <td><small>${r.vType || '-'}</small></td>
+                                    <td>${r.stdPhone || '-'}</td>
+                                </tr>
+                            `;
+                        }).join('');
                     }
                 }
             } 
@@ -467,6 +503,40 @@
                     }
                 }
             }
+        }
+
+        // 🌟 ฟังก์ชันใหม่: แสดงหน้าต่างรายละเอียดเมื่อกดที่ป้ายสี
+        function showVehicleDetail(index) {
+            const data = currentReportData[index];
+            if (!data) return;
+
+            let html = `<ul class="list-group list-group-flush rounded-3 border shadow-sm">`;
+            
+            // ข้อมูลพื้นฐาน
+            html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>วิธีการเดินทาง</b> <span class="fw-bold text-primary">${data.method || '-'}</span></li>`;
+            html += `<li class="list-group-item d-flex justify-content-between align-items-center"><b>ประเภทยานพาหนะ</b> <span>${data.vType || '-'}</span></li>`;
+            
+            // รายละเอียด (ยี่ห้อ/รุ่น/สี)
+            if (data.vDetails && data.vDetails !== '-') {
+                html += `<li class="list-group-item"><b>รายละเอียดรถ</b><br><span class="text-muted small">${data.vDetails}</span></li>`;
+            }
+            
+            // ป้ายทะเบียน
+            if (data.vPlate && data.vPlate !== '-') {
+                html += `<li class="list-group-item d-flex justify-content-between align-items-center"><b>ป้ายทะเบียน</b> <span class="badge bg-dark text-white fs-6 border">${data.vPlate}</span></li>`;
+            }
+            
+            // ข้อมูลคนขับ (จะโชว์เฉพาะเวลานั่งรถรับจ้าง)
+            if (data.method === 'รถโดยสาร/รับจ้าง') {
+                html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>ชื่อคนขับ</b> <span>${data.dName || '-'}</span></li>`;
+                html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-light"><b>เบอร์คนขับ</b> <a href="tel:${data.dPhone}" class="fw-bold text-decoration-none"><i class="bi bi-telephone-fill"></i> ${data.dPhone || '-'}</a></li>`;
+            }
+
+            html += `</ul>`;
+            
+            // นำ HTML ไปใส่ในกล่องและเปิดป๊อปอัป
+            document.getElementById('vehicleDetailBody').innerHTML = html;
+            new bootstrap.Modal(document.getElementById('vehicleDetailModal')).show();
         }
     </script>
 </body>
