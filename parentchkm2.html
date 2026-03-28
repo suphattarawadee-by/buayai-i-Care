@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตรวจสอบการมาเรียน - โรงเรียนบัวใหญ่</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; color: #1e293b; }
+    .header-box { background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; padding: 30px 20px 20px; border-radius: 0 0 25px 25px; text-align: center; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2); }
+    .org-logo { width: 90px; height: 90px; object-fit: cover; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.9); box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 10px; background-color: white; }
+    .search-container { background: white; border-radius: 20px; padding: 25px 20px; margin-top: -20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); position: relative; z-index: 10; }
+    .form-control-custom { background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 15px; padding: 15px 20px; font-size: 1.1rem; text-align: center; letter-spacing: 2px; }
+    .form-control-custom:focus { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); border-color: #f59e0b; outline: none; }
+    .btn-search { background: #ea580c; color: white; border-radius: 15px; padding: 12px; font-weight: bold; font-size: 1.1rem; width: 100%; margin-top: 15px; border: none; transition: 0.3s; }
+    .student-profile { background: white; border-radius: 20px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: none; }
+    .student-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: #f1f5f9; }
+    .latest-status-card { border-radius: 18px; transition: all 0.3s ease; }
+    .latest-status-card h1 { font-size: 4rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+    .status-badge { padding: 6px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; }
+    .status-present { background-color: #dcfce7; color: #16a34a; }
+    .status-absent { background-color: #fee2e2; color: #dc2626; }
+    .status-late { background-color: #fef9c3; color: #ca8a04; }
+    .status-leave { background-color: #e0e7ff; color: #4f46e5; }
+    .bg-present { background-color: #10b981 !important; }
+    .bg-absent { background-color: #ef4444 !important; }
+    .bg-late { background-color: #f59e0b !important; }
+    .bg-leave { background-color: #3b82f6 !important; }
+
+    /* 🌟 ปฏิทินแสดงจุดสี */
+    .calendar-box { border: 1px solid #e2e8f0; border-radius: 15px; padding: 15px; background: #f8fafc; margin-bottom: 20px; }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; margin-bottom: 10px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.85rem; }
+    .cal-day-name { font-weight: bold; color: #64748b; padding-bottom: 5px; }
+    .cal-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; border-radius: 8px; border: 1px solid #e2e8f0; position: relative; font-weight: 600; color: #334155; }
+    .cal-cell.empty { background: transparent; border: none; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 2px; }
+
+    /* 🌟 กระดานวาดลายเซ็น */
+    #signature-pad { border: 2px dashed #cbd5e1; border-radius: 15px; width: 100%; height: 150px; background: #fff; cursor: crosshair; touch-action: none; }
+    
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1050; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(2px); }
+    .modal-overlay.show { display: flex; opacity: 1; }
+    .modal-box { background: white; padding: 30px 20px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; transform: translateY(-20px); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
+    .modal-overlay.show .modal-box { transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <div class="header-section header-box">
+    <img src="https://drive.google.com/thumbnail?id=15qRbrNRtzKrqwii83OBc8AtVywopEMlj&sz=w300-h300" alt="โลโก้โรงเรียนบัวใหญ่" class="org-logo">
+    <h4 class="fw-bold mt-2 mb-1">ตรวจสอบการมาเรียน</h4>
+    <p class="small mb-2" style="color: rgba(255,255,255,0.8);">ระบบ Buayai I-Care - โรงเรียนบัวใหญ่</p>
+  </div>
+
+  <div class="container pb-5">
+    
+    <div class="search-container" id="search-section">
+      <label class="form-label text-muted fw-bold" style="font-size: 0.9rem;">ระบุรหัสนักเรียน (5 หลัก)</label>
+      <input type="number" id="studentId" class="form-control-custom w-100" placeholder="เช่น 33268" autocomplete="off">
+      <button class="btn-search" onclick="searchData()" id="btn-search">
+        <i class="bi bi-search"></i> ค้นหาข้อมูล
+      </button>
+    </div>
+
+    <div id="result-container" class="student-profile">
+      
+      <div class="text-center mb-4 pb-3" style="border-bottom: 1px dashed #cbd5e1;">
+        <div id="profile-icon-container" class="mb-2"></div>
+        <h5 class="fw-bold text-primary mt-2 mb-1" id="res-name">ชื่อ-สกุล</h5>
+        <span class="badge bg-secondary" id="res-id">รหัส: 00000</span>
+      </div>
+
+      <h6 class="fw-bold text-muted mb-2"><i class="bi bi-calendar3"></i> ปฏิทินการมาเรียน (เดือนล่าสุด)</h6>
+      <div class="calendar-box">
+          <div class="cal-header">
+              <span id="cal-month-title">เดือน</span>
+              <div style="font-size: 0.7rem; display: flex; gap: 8px;">
+                  <span><span class="dot bg-present d-inline-block"></span> มา</span>
+                  <span><span class="dot bg-leave d-inline-block"></span> ลา</span>
+                  <span><span class="dot bg-late d-inline-block"></span> สาย</span>
+                  <span><span class="dot bg-absent d-inline-block"></span> ขาด</span>
+              </div>
+          </div>
+          <div class="cal-grid" id="calendar-grid"></div>
+      </div>
+
+      <button id="btn-leave-request" class="btn w-100 rounded-pill mb-4 py-3 shadow-sm fw-bold text-white" onclick="openLeaveModal()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+        <i class="bi bi-envelope-paper-fill me-1"></i> แจ้งลาหยุดออนไลน์
+      </button>
+
+      <div class="latest-status-card text-center mb-4 p-4 shadow-sm text-white" id="latest-status-box">
+        <h6 class="opacity-75 mb-1" style="font-size: 0.9rem;">สถานะการเข้าแถวล่าสุด</h6>
+        <p class="mb-1 fw-bold" style="font-size: 1.1rem;" id="latest-date-text">วันที่ -- เดือน --</p>
+        <h1 class="fw-bold mb-2 mt-2" id="latest-status-text">--</h1>
+        <p class="mb-0 mt-3" style="font-size: 0.85rem; opacity: 0.9;">
+          <i class="bi bi-clock"></i> เวลา <span id="latest-time-text">--:--</span> น.
+        </p>
+      </div>
+
+      <button class="btn btn-outline-danger w-100 rounded-pill fw-bold mt-2" onclick="exitProfile()">
+          <i class="bi bi-box-arrow-left"></i> ออกจากการค้นหา (ค้นหาใหม่)
+      </button>
+
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="customModal">
+    <div class="modal-box">
+      <div id="modalIcon" class="modal-icon text-warning"><i class="bi bi-exclamation-circle-fill"></i></div>
+      <h5 id="modalTitle" class="fw-bold mb-2 text-dark">แจ้งเตือน</h5>
+      <p id="modalMessage" class="text-muted mb-4" style="font-size: 0.95rem;">ข้อความ</p>
+      <button class="btn btn-secondary w-100 rounded-pill fw-bold" onclick="closeModal('customModal')">ตกลง (OK)</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="leaveFormModal">
+    <div class="modal-box" style="text-align: left;">
+      <h5 class="fw-bold text-primary mb-3 text-center"><i class="bi bi-envelope-paper"></i> แจ้งลาหยุดออนไลน์</h5>
+      <div class="mb-2">
+        <label class="form-label small fw-bold text-muted mb-1">ชื่อนักเรียน:</label>
+        <div class="p-2 bg-light rounded text-dark fw-bold" id="leave-student-name">-</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small fw-bold text-muted mb-1">ประเภทการลา:</label>
+        <select id="leaveType" class="form-select rounded-pill">
+          <option value="ลป">ลาป่วย (ลป)</option>
+          <option value="ลก">ลากิจ (ลก)</option>
+        </select>
+      </div>
+      <div class="row g-2 mb-3">
+        <div class="col-6"><label class="form-label small fw-bold text-muted mb-1">ลาตั้งแต่วันที่:</label><input type="date" id="leaveStartDate" class="form-control rounded-pill"></div>
+        <div class="col-6"><label class="form-label small fw-bold text-muted mb-1">ถึงวันที่:</label><input type="date" id="leaveEndDate" class="form-control rounded-pill"></div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small fw-bold text-muted mb-1">เหตุผลการลา:</label>
+        <textarea id="leaveReason" class="form-control" rows="2" style="border-radius: 15px;" placeholder="ระบุอาการป่วย หรือธุระ..."></textarea>
+      </div>
+      
+      <div class="mb-4">
+        <label class="form-label small fw-bold text-danger mb-1"><i class="bi bi-pen"></i> ลายเซ็นผู้ปกครองรับรอง:</label>
+        <canvas id="signature-pad"></canvas>
+        <div class="text-end mt-1"><span class="badge bg-secondary" style="cursor:pointer;" onclick="clearSignature()"><i class="bi bi-eraser"></i> ล้างลายเซ็น</span></div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-light w-50 rounded-pill fw-bold" onclick="closeModal('leaveFormModal')">ยกเลิก</button>
+        <button id="btn-submit-leave" class="btn btn-primary w-50 rounded-pill fw-bold" onclick="submitLeave()">ส่งข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========================================================
+    // ⚠️ ใส่ URL Web App API ฝั่งหลังบ้านของคุณครูตรงนี้ ⚠️
+    // ========================================================
+    const API_URL = "ใส่_WEB_APP_URL_ตรงนี้"; 
+
+    let currentStudentData = null;
+    let attendanceRecords = [];
+
+    // --- ฟังก์ชันช่วยเหลือ (Modal / Device) ---
+    function showModal(title, message, type = 'warning') {
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalMessage').innerHTML = message;
+      const icon = document.getElementById('modalIcon');
+      if (type === 'warning') icon.innerHTML = '<i class="bi bi-exclamation-triangle-fill text-warning"></i>';
+      else if (type === 'error') icon.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i>';
+      else if (type === 'success') icon.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+      modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10);
+    }
+    function closeModal(modalId) { const m = document.getElementById(modalId); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); }
+    function getDeviceName() { return /android/i.test(navigator.userAgent) ? "Android" : /iPad|iPhone|iPod/.test(navigator.userAgent) ? "iOS" : "Web/PC"; }
+    function exitProfile() { document.getElementById("studentId").value = ""; document.getElementById("result-container").style.display = "none"; document.getElementById("search-section").style.display = "block"; }
+
+    // --- ค้นหาข้อมูล (API Fetch) ---
+    async function searchData() {
+      const inputId = document.getElementById("studentId").value.trim();
+      if(!inputId) return showModal("ข้อมูลไม่ครบถ้วน", "กรุณาระบุ รหัสนักเรียน 5 หลัก", "warning");
+
+      const btn = document.getElementById("btn-search");
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังค้นหา...'; btn.disabled = true;
+      
+      try {
+          const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "search", studentId: inputId, device: getDeviceName() }) });
+          const result = await response.json();
+          btn.innerHTML = '<i class="bi bi-search"></i> ค้นหาข้อมูล'; btn.disabled = false;
+
+          if (result.error) return showModal("ไม่พบข้อมูล", result.error, "error");
+          if (result.success) {
+              currentStudentData = { id: inputId, name: result.data.length > 0 ? result.data[0].name : "ไม่ระบุชื่อ", room: result.room };
+              attendanceRecords = result.data;
+              document.getElementById("search-section").style.display = "none"; // ซ่อนกล่องค้นหา
+              renderResult(result.room, result.imageUrl);
+          }
+      } catch (err) {
+          btn.innerHTML = '<i class="bi bi-search"></i> ค้นหาข้อมูล'; btn.disabled = false;
+          showModal("ข้อผิดพลาด", "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", "error");
+      }
+    }
+
+    // --- นำข้อมูลมาแสดงบนหน้าจอ ---
+    function renderResult(roomName, imageUrl) {
+      document.getElementById("result-container").style.display = "block";
+      document.getElementById("res-name").innerText = currentStudentData.name;
+      document.getElementById("res-id").innerText = "รหัส: " + currentStudentData.id + " | ชั้น " + roomName;
+
+      // จัดการรูปภาพ
+      const iconBox = document.getElementById("profile-icon-container");
+      if (imageUrl && imageUrl.trim() !== "") {
+        let fileId = imageUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) ? imageUrl.match(/\/d\/([a-zA-Z0-9_-]+)/)[1] : (imageUrl.includes('id=') ? new URLSearchParams(imageUrl.substring(imageUrl.indexOf('?'))).get('id') : "");
+        iconBox.innerHTML = fileId ? `<img src="https://drive.google.com/thumbnail?id=${fileId}&sz=w300-h300" class="student-avatar">` : `<i class="bi bi-person-circle text-muted" style="font-size: 5rem;"></i>`;
+      } else { iconBox.innerHTML = `<i class="bi bi-person-circle text-muted" style="font-size: 5rem;"></i>`; }
+
+      if(attendanceRecords.length === 0) {
+          document.getElementById("latest-status-box").style.display = "none";
+          document.getElementById("calendar-grid").innerHTML = "<div style='grid-column: span 7; color:#94a3b8;'>ไม่พบประวัติการเข้าแถว</div>";
+          return;
+      }
+
+      // แสดงการเข้าแถวล่าสุด
+      document.getElementById("latest-status-box").style.display = "block";
+      const latest = attendanceRecords[attendanceRecords.length - 1]; // รายการสุดท้ายคืออันใหม่สุด
+      document.getElementById("latest-date-text").innerText = "วันที่ " + latest.date;
+      document.getElementById("latest-status-text").innerText = latest.status;
+      document.getElementById("latest-time-text").innerText = latest.time;
+      
+      const lBox = document.getElementById("latest-status-box");
+      lBox.className = "latest-status-card text-center mb-4 p-4 shadow-sm text-white " + (latest.status === "มา" ? "bg-present" : latest.status === "ขาด" ? "bg-absent" : latest.status === "สาย" ? "bg-late" : "bg-leave");
+
+      // สร้างปฏิทิน
+      generateCalendar();
+    }
+
+    // --- สร้างปฏิทินจุดสี ---
+    function generateCalendar() {
+        if(attendanceRecords.length === 0) return;
+        
+        // ดึงเดือนจากวันที่ล่าสุด (dd/MM/yyyy)
+        const latestDateArr = attendanceRecords[attendanceRecords.length - 1].date.split('/');
+        const tMonth = parseInt(latestDateArr[1]);
+        const tYear = parseInt(latestDateArr[2]);
+        const monthsTH = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        
+        document.getElementById("cal-month-title").innerText = `${monthsTH[tMonth]} ${tYear+543}`;
+
+        // แมปข้อมูลใส่วันที่
+        let statusMap = {};
+        attendanceRecords.forEach(r => {
+            let p = r.date.split('/');
+            if(parseInt(p[1]) === tMonth && parseInt(p[2]) === tYear) {
+                statusMap[parseInt(p[0])] = r.status; // statusMap[วันที่] = สถานะ
+            }
+        });
+
+        const grid = document.getElementById("calendar-grid");
+        grid.innerHTML = '<div class="cal-day-name">อา</div><div class="cal-day-name">จ</div><div class="cal-day-name">อ</div><div class="cal-day-name">พ</div><div class="cal-day-name">พฤ</div><div class="cal-day-name">ศ</div><div class="cal-day-name">ส</div>';
+        
+        let firstDay = new Date(tYear, tMonth - 1, 1).getDay(); // หาวันแรกของเดือนว่าตรงกับวันอะไร
+        let daysInMonth = new Date(tYear, tMonth, 0).getDate(); // หาจำนวนวันในเดือน
+
+        for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="cal-cell empty"></div>`;
+        for(let d=1; d<=daysInMonth; d++) {
+            let dotHtml = "";
+            if(statusMap[d]) {
+                let colorClass = statusMap[d] === "มา" ? "bg-present" : statusMap[d] === "ขาด" ? "bg-absent" : statusMap[d] === "สาย" ? "bg-late" : "bg-leave";
+                dotHtml = `<div class="dot ${colorClass}"></div>`;
+            }
+            grid.innerHTML += `<div class="cal-cell">${d}${dotHtml}</div>`;
+        }
+    }
+
+    // --- ระบบวาดลายเซ็น (Signature Canvas) ---
+    const canvas = document.getElementById('signature-pad');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+
+    // ตั้งค่าขนาด Canvas ให้พอดีกับหน้าจอ
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        ctx.scale(ratio, ratio);
+        ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.strokeStyle = "#0f172a";
+    }
+    window.addEventListener("resize", resizeCanvas);
+    
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    
+    function startDraw(e) { e.preventDefault(); isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
+    function draw(e) { if (!isDrawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
+    function stopDraw(e) { e.preventDefault(); isDrawing = false; }
+    
+    canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw); canvas.addEventListener('mouseout', stopDraw);
+    canvas.addEventListener('touchstart', startDraw, {passive: false}); canvas.addEventListener('touchmove', draw, {passive: false}); canvas.addEventListener('touchend', stopDraw);
+    
+    function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+    // --- ระบบแจ้งลาออนไลน์ ---
+    function openLeaveModal() {
+      if (!currentStudentData) return;
+      document.getElementById('leave-student-name').innerText = currentStudentData.name + " (" + currentStudentData.room + ")";
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('leaveStartDate').value = today; document.getElementById('leaveEndDate').value = today;
+      document.getElementById('leaveReason').value = "";
+      
+      const modal = document.getElementById('leaveFormModal');
+      modal.style.display = 'flex'; setTimeout(() => { modal.classList.add('show'); resizeCanvas(); clearSignature(); }, 10);
+    }
+
+    // ตรวจสอบว่ามีลายเซ็นหรือไม่ (เช็คพิกเซลว่าง)
+    function isCanvasBlank() {
+        const blank = document.createElement('canvas');
+        blank.width = canvas.width; blank.height = canvas.height;
+        return canvas.toDataURL() === blank.toDataURL();
+    }
+
+    async function submitLeave() {
+      const type = document.getElementById('leaveType').value;
+      const sDate = document.getElementById('leaveStartDate').value;
+      const eDate = document.getElementById('leaveEndDate').value;
+      const reason = document.getElementById('leaveReason').value.trim();
+
+      if (!sDate || !eDate || !reason) return alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ");
+      if (isCanvasBlank()) return alert("กรุณาเซ็นชื่อรับรองการลาด้วยครับ");
+
+      const btn = document.getElementById('btn-submit-leave');
+      btn.disabled = true; btn.innerText = "กำลังส่ง...";
+
+      const leaveData = {
+        id: currentStudentData.id,
+        name: currentStudentData.name,
+        room: currentStudentData.room,
+        leaveType: type,
+        startDate: sDate,
+        endDate: eDate,
+        reason: reason,
+        signature: canvas.toDataURL("image/png") // 🌟 ดึงภาพลายเซ็นแนบไปด้วย
+      };
+
+      try {
+          const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "leaveRequest", data: leaveData }) });
+          const res = await response.json();
+          btn.disabled = false; btn.innerText = "ส่งข้อมูล"; closeModal('leaveFormModal');
+          if (res.success) showModal("สำเร็จ!", "บันทึกข้อมูลการลาและลายเซ็นเรียบร้อยแล้ว", "success");
+          else showModal("ข้อผิดพลาด", res.error, "error");
+      } catch(err) {
+          btn.disabled = false; btn.innerText = "ส่งข้อมูล"; showModal("ข้อผิดพลาด", "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", "error");
+      }
+    }
+  </script>
+</body>
+</html>
