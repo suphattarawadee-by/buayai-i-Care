@@ -21,7 +21,7 @@
     .form-label { font-weight: 600; color: #475569; font-size: 0.9rem; margin-bottom: 5px; }
     .form-control, .form-select { border-radius: 12px; border: 1px solid #cbd5e1; padding: 12px 15px; font-size: 1rem; }
     .form-control:focus, .form-select:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); border-color: #3b82f6; }
-    .readonly-field { background-color: #f8fafc; cursor: not-allowed; color: #3b82f6; font-weight: bold; border: 1px dashed #cbd5e1; }
+    .readonly-field { background-color: #f1f5f9; cursor: not-allowed; color: #0ea5e9; font-weight: bold; border: 1px dashed #cbd5e1; }
 
     /* Signature Pad */
     #signature-pad { border: 2px dashed #94a3b8; border-radius: 15px; width: 100%; height: 160px; background: #fff; cursor: crosshair; touch-action: none; }
@@ -139,7 +139,7 @@
             </label>
         </div>
 
-        <button id="btn-submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-lg" style="font-size: 1.1rem;" onclick="submitLeaveForm()">
+        <button id="btn-submit" class="btn btn-login-pulse w-100 rounded-pill py-3 fw-bold shadow-lg" style="font-size: 1.1rem;" onclick="submitLeaveForm()">
             <i class="bi bi-send-fill"></i> ยืนยันส่งใบลาออนไลน์
         </button>
 
@@ -202,7 +202,7 @@
             btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> เข้าสู่ระบบ';
 
             if (res.success) {
-                // 🌟 เก็บข้อมูลผู้ใช้ที่เซิร์ฟเวอร์ส่งกลับมา
+                // เก็บข้อมูลผู้ใช้ที่เซิร์ฟเวอร์ส่งกลับมา
                 loggedInUser = {
                     grade: res.grade,
                     room: res.room,
@@ -224,7 +224,6 @@
                 document.getElementById('leaveStartDate').value = today;
                 document.getElementById('leaveEndDate').value = today;
                 
-                // เซ็ตค่ากระดานวาดรูป
                 resizeCanvas();
             } else {
                 showModal("เข้าสู่ระบบล้มเหลว", res.error || "รหัสผ่านไม่ถูกต้อง", "error");
@@ -300,12 +299,13 @@
 
         const btn = document.getElementById('btn-submit');
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึกข้อมูล...';
+        // การแปลงไฟล์ภาพแล้วอัปโหลดจะใช้เวลาสักพัก ให้ผู้ปกครองรู้ว่าระบบกำลังทำงานอยู่
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึกข้อมูลและอัปโหลดลายเซ็น...';
 
         const payload = {
             action: "submitLeave",
             data: {
-                grade: loggedInUser.grade,       // 🌟 ดึงมาจากตัวแปรที่เราเก็บไว้ตอนล็อกอิน
+                grade: loggedInUser.grade,       
                 room: loggedInUser.room,         
                 studentId: loggedInUser.studentId, 
                 name: loggedInUser.name,         
@@ -325,8 +325,7 @@
             btn.innerHTML = '<i class="bi bi-send-fill"></i> ยืนยันส่งใบลาออนไลน์';
 
             if (res.success) {
-                showModal("ส่งใบลาสำเร็จ!", res.message, "success");
-                // เคลียร์ฟอร์มให้พร้อมใช้งานต่อ
+                showModal("ส่งใบลาสำเร็จ!", "ระบบได้รับเรื่องการลาและแนบลายเซ็นเรียบร้อยแล้วครับ", "success");
                 document.getElementById('leaveReason').value = "";
                 document.getElementById('leaveConsent').checked = false;
                 clearSignature();
