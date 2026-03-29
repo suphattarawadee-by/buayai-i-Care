@@ -47,24 +47,12 @@
     .student-profile { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
     .student-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #f8fafc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     
-    /* 🌟 Colors & Blinking Button */
+    /* 🌟 Colors */
     .bg-present { background-color: #10b981 !important; color: white; } 
     .bg-absent { background-color: #ef4444 !important; color: white; } 
     .bg-late { background-color: #f59e0b !important; color: white; } 
     .bg-leave { background-color: #3b82f6 !important; color: white; } 
     .bg-leave-kit { background-color: #8b5cf6 !important; color: white; } 
-
-    /* เอฟเฟกต์ปุ่มกระพริบสีฟ้า */
-    .btn-blink-blue {
-        background: linear-gradient(135deg, #0ea5e9, #2563eb);
-        animation: pulseBlue 1.5s infinite;
-        border: none;
-    }
-    @keyframes pulseBlue {
-        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); transform: scale(1); }
-        50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); transform: scale(1.02); }
-        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); transform: scale(1); }
-    }
 
     /* 🌟 Calendar Dots */
     .calendar-box { border: 1px solid #e2e8f0; border-radius: 15px; padding: 15px; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
@@ -74,18 +62,17 @@
     .cal-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border-radius: 10px; border: 1px solid #f1f5f9; font-weight: 600; color: #334155; }
     .cal-cell.empty { background: transparent; border: none; }
     .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-
-    /* 🌟 Signature & Modals */
-    #signature-pad { border: 2px dashed #cbd5e1; border-radius: 15px; width: 100%; height: 150px; background: #f8fafc; cursor: crosshair; touch-action: none; }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1100; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; backdrop-filter: blur(3px); }
-    .modal-overlay.show { display: flex; opacity: 1; }
-    .modal-box { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; transform: translateY(-20px); transition: 0.3s; max-height: 90vh; overflow-y: auto; }
-    .modal-overlay.show .modal-box { transform: translateY(0); }
     
     /* สไตล์กล่องโชว์รายละเอียดวัน */
     .detail-dropdown { background: rgba(255,255,255,0.95); color: #1e293b; border-radius: 12px; padding: 10px; font-size: 0.85rem; max-height: 120px; overflow-y: auto; text-align: left; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; display: none; animation: fadeIn 0.3s ease; }
     .card-stat { cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
     .card-stat:active { transform: scale(0.96); }
+
+    /* Modals Overlay */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1100; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; backdrop-filter: blur(3px); }
+    .modal-overlay.show { display: flex; opacity: 1; }
+    .modal-box { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; transform: translateY(-20px); transition: 0.3s; max-height: 90vh; overflow-y: auto; }
+    .modal-overlay.show .modal-box { transform: translateY(0); }
   </style>
 </head>
 <body>
@@ -132,12 +119,8 @@
         </div>
 
         <div id="view-attendance" class="view-section active">
-            
-            <button class="btn w-100 rounded-pill mb-4 py-3 fw-bold text-white d-flex align-items-center justify-content-center btn-blink-blue" onclick="openLeaveModal()" style="font-size:1.1rem;">
-                <i class="bi bi-envelope-paper-fill fs-4 me-2"></i> ส่งใบลาออนไลน์
-            </button>
 
-            <div class="calendar-box shadow-sm mb-4">
+            <div class="calendar-box shadow-sm mb-4 mt-2">
                 <div class="cal-header">
                     <span id="cal-month-title" class="text-primary fs-5"><i class="bi bi-calendar3"></i> เดือน</span>
                     <div style="font-size: 0.65rem; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
@@ -210,12 +193,10 @@
             <p class="text-center small text-muted mt-3"><i class="bi bi-hand-index-thumb"></i> แตะที่กล่องเพื่อดูวันที่</p>
         </div>
 
-  <div id="view-academic" class="view-section">
+        <div id="view-academic" class="view-section">
             <h5 class="fw-bold text-dark mb-3"><i class="bi bi-calendar-event-fill text-warning"></i> ปฏิทินวิชาการ</h5>
             <div class="card border-0 shadow-sm rounded-4 p-2" style="background: white;">
-                
                 <iframe src="https://calendar.google.com/calendar/embed?src=c_282f7dcd26b3d451be55932ee47ba0c3d53010aed6c13942177a01cadb9b0823%40group.calendar.google.com&ctz=Asia%2FBangkok" style="border:solid 1px #e2e8f0; border-radius: 12px;" width="100%" height="400" frameborder="0" scrolling="no"></iframe>
-                
             </div>
             <div class="text-center mt-3 small text-muted">* ข้อมูลปฏิทินอ้างอิงจากฝ่ายวิชาการ โรงเรียนบัวใหญ่</div>
         </div>
@@ -237,49 +218,6 @@
       <h5 id="modalTitle" class="fw-bold mb-2 text-dark">แจ้งเตือน</h5>
       <p id="modalMessage" class="text-muted mb-4" style="font-size: 0.95rem;">ข้อความ</p>
       <button class="btn btn-secondary w-100 rounded-pill fw-bold" onclick="closeModal('customModal')">ตกลง (OK)</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="leaveFormModal">
-    <div class="modal-box" style="text-align: left; padding: 20px;">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="fw-bold text-primary m-0"><i class="bi bi-envelope-paper"></i> แจ้งลาหยุด</h5>
-          <button type="button" class="btn-close" onclick="closeModal('leaveFormModal')"></button>
-      </div>
-      
-      <div class="row g-2 mb-3">
-        <div class="col-12">
-            <label class="form-label small fw-bold text-muted mb-1">ประเภทการลา:</label>
-            <select id="leaveType" class="form-select rounded-pill border-primary fw-bold text-primary">
-                <option value="ลป">ลาป่วย (ลป)</option>
-                <option value="ลก">ลากิจ (ลก)</option>
-            </select>
-        </div>
-        <div class="col-6"><label class="form-label small fw-bold text-muted mb-1">ตั้งแต่วันที่:</label><input type="date" id="leaveStartDate" class="form-control rounded-pill"></div>
-        <div class="col-6"><label class="form-label small fw-bold text-muted mb-1">ถึงวันที่:</label><input type="date" id="leaveEndDate" class="form-control rounded-pill"></div>
-      </div>
-      
-      <div class="mb-2">
-        <label class="form-label small fw-bold text-muted mb-1">เหตุผลการลา:</label>
-        <textarea id="leaveReason" class="form-control" rows="2" style="border-radius: 15px;" placeholder="ระบุอาการ หรือธุระ..."></textarea>
-      </div>
-      
-      <div class="mb-3">
-        <label class="form-label small fw-bold text-danger mb-1"><i class="bi bi-pen"></i> ลายเซ็นผู้ปกครองรับรอง:</label>
-        <canvas id="signature-pad"></canvas>
-        <div class="text-end mt-1"><span class="badge bg-secondary text-white shadow-sm" style="cursor:pointer;" onclick="clearSignature()"><i class="bi bi-eraser"></i> ล้างลายเซ็น</span></div>
-      </div>
-
-      <div class="form-check mb-4 bg-light p-3 rounded-3 border" style="padding-left: 2.5rem !important;">
-          <input class="form-check-input mt-1" type="checkbox" id="leaveConsent" style="transform: scale(1.3); margin-left: -1.5rem;">
-          <label class="form-check-label text-danger fw-bold lh-sm" for="leaveConsent" style="font-size: 0.8rem; cursor: pointer;">
-              ข้าพเจ้าทราบว่า การลากิจ ลาป่วย แต่ละครั้งมีเหตุจำเป็น และเข้าใจว่าการลาบ่อยครั้งเป็นสาเหตุให้มีนักเรียนมีเวลาเรียนไม่เพียงพอ (มส) ได้ ทั้งนี้จะกำชับให้นักเรียนติดตามภาระงานอย่างใกล้ชิด
-          </label>
-      </div>
-
-      <button id="btn-submit-leave" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm" onclick="submitLeave()">
-          <i class="bi bi-send-fill"></i> ยืนยันการส่งข้อมูล
-      </button>
     </div>
   </div>
 
@@ -369,7 +307,7 @@
       }
     }
 
-    // --- จัดการข้อมูลและสถิติ (อัปเดตให้ดึงวันที่แยกใส่กล่อง) ---
+    // --- จัดการข้อมูลและสถิติ ---
     function renderResult(roomName, imageUrl) {
       document.getElementById("res-name").innerText = currentStudentData.name;
       document.getElementById("res-id").innerText = "รหัส: " + currentStudentData.id + " | ชั้น " + roomName;
@@ -456,92 +394,6 @@
             }
             grid.innerHTML += `<div class="cal-cell">${d}${dotHtml}</div>`;
         }
-    }
-
-    // --- กระดานวาดลายเซ็น ---
-    const canvas = document.getElementById('signature-pad');
-    const ctx = canvas.getContext('2d');
-    let isDrawing = false;
-
-    function resizeCanvas() {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        ctx.scale(ratio, ratio);
-        ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.strokeStyle = "#0f172a";
-    }
-    window.addEventListener("resize", resizeCanvas);
-    
-    function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return { x: clientX - rect.left, y: clientY - top };
-    }
-    
-    function startDraw(e) { e.preventDefault(); isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
-    function draw(e) { if (!isDrawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
-    function stopDraw(e) { e.preventDefault(); isDrawing = false; }
-    
-    canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw); canvas.addEventListener('mouseout', stopDraw);
-    canvas.addEventListener('touchstart', startDraw, {passive: false}); canvas.addEventListener('touchmove', draw, {passive: false}); canvas.addEventListener('touchend', stopDraw);
-    
-    function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
-
-    // --- ส่งใบลาออนไลน์ ---
-    function openLeaveModal() {
-      if (!currentStudentData) return;
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('leaveStartDate').value = today; document.getElementById('leaveEndDate').value = today;
-      document.getElementById('leaveReason').value = "";
-      document.getElementById('leaveConsent').checked = false; // เคลียร์ติ๊กข้อตกลง
-      
-      const modal = document.getElementById('leaveFormModal');
-      modal.style.display = 'flex'; setTimeout(() => { modal.classList.add('show'); resizeCanvas(); clearSignature(); }, 10);
-    }
-
-    function isCanvasBlank() {
-        const blank = document.createElement('canvas');
-        blank.width = canvas.width; blank.height = canvas.height;
-        return canvas.toDataURL() === blank.toDataURL();
-    }
-
-    async function submitLeave() {
-      const type = document.getElementById('leaveType').value;
-      const sDate = document.getElementById('leaveStartDate').value;
-      const eDate = document.getElementById('leaveEndDate').value;
-      const reason = document.getElementById('leaveReason').value.trim();
-      const isConsentChecked = document.getElementById('leaveConsent').checked;
-
-      if (!sDate || !eDate || !reason) return showModal("ข้อมูลไม่ครบ", "กรุณาระบุข้อมูลการลาให้ครบถ้วนครับ", "warning");
-      if (isCanvasBlank()) return showModal("ลืมเซ็นชื่อ", "กรุณาเซ็นชื่อผู้ปกครองรับรองการลาด้วยครับ", "warning");
-      if (!isConsentChecked) return showModal("กดยอมรับเงื่อนไข", "กรุณาทำเครื่องหมายถูก (☑) เพื่อรับทราบเงื่อนไขเรื่อง มส ก่อนส่งข้อมูลครับ", "warning");
-
-      const btn = document.getElementById('btn-submit-leave');
-      btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังส่ง...';
-
-      const leaveData = {
-        id: currentStudentData.id,
-        name: currentStudentData.name,
-        room: currentStudentData.room,
-        leaveType: type,
-        startDate: sDate,
-        endDate: eDate,
-        reason: reason,
-        signature: canvas.toDataURL("image/png") 
-      };
-
-      try {
-          const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "leaveRequest", data: leaveData }) });
-          const res = await response.json();
-          btn.disabled = false; btn.innerHTML = '<i class="bi bi-send-fill"></i> ยืนยันการส่งข้อมูล'; 
-          closeModal('leaveFormModal');
-          if (res.success) showModal("ส่งใบลาสำเร็จ!", "บันทึกข้อมูลและลายเซ็นเรียบร้อยแล้ว", "success");
-          else showModal("ข้อผิดพลาด", res.error, "error");
-      } catch(err) {
-          btn.disabled = false; btn.innerHTML = '<i class="bi bi-send-fill"></i> ยืนยันการส่งข้อมูล'; 
-          showModal("ข้อผิดพลาด", "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", "error");
-      }
     }
   </script>
 </body>
