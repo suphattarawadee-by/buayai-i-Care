@@ -21,9 +21,10 @@
     .form-label { font-weight: 600; color: #475569; font-size: 0.9rem; margin-bottom: 5px; }
     .form-control, .form-select { border-radius: 12px; border: 1px solid #cbd5e1; padding: 12px 15px; font-size: 1rem; }
     .form-control:focus, .form-select:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); border-color: #3b82f6; }
-    
+    .readonly-field { background-color: #f8fafc; cursor: not-allowed; color: #3b82f6; font-weight: bold; border: 1px dashed #cbd5e1; }
+
     /* Signature Pad */
-    #signature-pad { border: 2px dashed #94a3b8; border-radius: 15px; width: 100%; height: 160px; background: #f8fafc; cursor: crosshair; touch-action: none; }
+    #signature-pad { border: 2px dashed #94a3b8; border-radius: 15px; width: 100%; height: 160px; background: #fff; cursor: crosshair; touch-action: none; }
     
     /* Consent Box */
     .consent-box { background-color: #fef2f2; border: 1px solid #fecaca; padding: 15px; border-radius: 12px; margin-bottom: 25px; }
@@ -35,7 +36,6 @@
     .modal-box { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; transform: translateY(-20px); transition: 0.3s; }
     .modal-overlay.show .modal-box { transform: translateY(0); }
 
-    /* Button effects */
     .btn-login-pulse { background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; color: white; transition: 0.3s; }
     .btn-login-pulse:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); color: white; }
   </style>
@@ -74,7 +74,6 @@
         </div>
     </div>
 
-
     <div id="form-section" class="content-container" style="display: none;">
         
         <div class="text-end mb-3">
@@ -83,36 +82,20 @@
             </button>
         </div>
 
-        <h5 class="fw-bold text-primary mb-4 border-bottom pb-2"><i class="bi bi-person-lines-fill"></i> ข้อมูลนักเรียน</h5>
+        <h5 class="fw-bold text-primary mb-3 border-bottom pb-2"><i class="bi bi-person-lines-fill"></i> ข้อมูลนักเรียน</h5>
         
-        <div class="row g-3 mb-3">
-            <div class="col-6">
-                <label class="form-label">ระดับชั้น</label>
-                <select id="grade" class="form-select fw-bold text-primary bg-light" style="pointer-events: none;" readonly>
-                    <option value="" disabled selected>เลือกชั้น</option>
-                    <option value="ม.1">ม.1</option><option value="ม.2">ม.2</option><option value="ม.3">ม.3</option>
-                    <option value="ม.4">ม.4</option><option value="ม.5">ม.5</option><option value="ม.6">ม.6</option>
-                </select>
-            </div>
-            <div class="col-6">
-                <label class="form-label">ห้อง</label>
-                <select id="room" class="form-select fw-bold text-primary bg-light" style="pointer-events: none;" readonly>
-                    <option value="" disabled selected>เลือกห้อง</option>
-                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                    <option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
-                </select>
-            </div>
-            <div class="col-12 mt-1"><small class="text-danger">* ระบบดึงชั้นและห้องให้โดยอัตโนมัติตามรหัส</small></div>
-        </div>
-
         <div class="mb-3">
-            <label class="form-label">รหัสนักเรียน (5 หลัก)</label>
-            <input type="number" id="studentId" class="form-control bg-light" readonly>
+            <label class="form-label">รหัสนักเรียน</label>
+            <input type="text" id="studentId" class="form-control readonly-field" readonly>
         </div>
-        <div class="mb-4">
-            <label class="form-label text-danger">ชื่อ - นามสกุล (กรุณากรอกให้ถูกต้อง)</label>
-            <input type="text" id="studentName" class="form-control" placeholder="เช่น เด็กชายรักเรียน ขยันยิ่ง">
+        <div class="mb-3">
+            <label class="form-label">ชื่อ - นามสกุล</label>
+            <input type="text" id="studentName" class="form-control readonly-field" readonly>
+        </div>
+        <div class="text-center mb-4">
+            <span class="badge bg-light text-primary border border-primary rounded-pill px-3 py-2 shadow-sm" id="classDisplay">
+                ระดับชั้น: -
+            </span>
         </div>
 
         <h5 class="fw-bold text-primary mb-4 border-bottom pb-2 mt-4"><i class="bi bi-envelope-paper"></i> รายละเอียดการลา</h5>
@@ -178,6 +161,9 @@
     // ========================================================
     const API_URL = "https://script.google.com/macros/s/AKfycbw4Uxz7Qu1oYnJLJLImV4CtIpTwmYt6bMsaPbCBKVjRZ21UFApqMp2oOdcc13k2Q64S/exec"; 
 
+    // ตัวแปรเก็บข้อมูล User ที่ล็อกอินสำเร็จ
+    let loggedInUser = null;
+
     // --- Modal Alert ---
     function showModal(title, message, type = 'warning') {
       const m = document.getElementById('customModal');
@@ -216,14 +202,22 @@
             btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> เข้าสู่ระบบ';
 
             if (res.success) {
+                // 🌟 เก็บข้อมูลผู้ใช้ที่เซิร์ฟเวอร์ส่งกลับมา
+                loggedInUser = {
+                    grade: res.grade,
+                    room: res.room,
+                    studentId: res.username,
+                    name: res.name
+                };
+
                 // เปลี่ยนหน้าจอเป็นหน้าฟอร์ม
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('form-section').style.display = 'block';
                 
-                // กรอกข้อมูลชั้น/ห้อง อัตโนมัติและล็อกไม่ให้แก้
-                if (res.grade) document.getElementById('grade').value = res.grade;
-                if (res.room) document.getElementById('room').value = res.room;
-                document.getElementById('studentId').value = u; // นำ Username มาใส่เป็นรหัสนักเรียนให้เลย
+                // กรอกข้อมูลอัตโนมัติ
+                document.getElementById('studentId').value = loggedInUser.studentId;
+                document.getElementById('studentName').value = loggedInUser.name;
+                document.getElementById('classDisplay').innerText = `ระดับชั้น: ${loggedInUser.grade}/${loggedInUser.room}`;
                 
                 // เซ็ตปฏิทินเป็นวันปัจจุบัน
                 const today = new Date().toISOString().split('T')[0];
@@ -244,9 +238,9 @@
 
     // --- ออกจากระบบ ---
     function logout() {
+        loggedInUser = null;
         document.getElementById('loginUser').value = "";
         document.getElementById('loginPass').value = "";
-        document.getElementById('studentName').value = "";
         document.getElementById('leaveReason').value = "";
         document.getElementById('leaveConsent').checked = false;
         
@@ -292,18 +286,14 @@
 
     // --- ฟังก์ชันส่งใบลา ---
     async function submitLeaveForm() {
-        const grade = document.getElementById('grade').value;
-        const room = document.getElementById('room').value;
-        const studentId = document.getElementById('studentId').value.trim();
-        const studentName = document.getElementById('studentName').value.trim();
-        
+        if (!loggedInUser) return showModal("ข้อผิดพลาด", "กรุณาเข้าสู่ระบบก่อน", "error");
+
         const leaveType = document.getElementById('leaveType').value;
         const startDate = document.getElementById('leaveStartDate').value;
         const endDate = document.getElementById('leaveEndDate').value;
         const reason = document.getElementById('leaveReason').value.trim();
         const consent = document.getElementById('leaveConsent').checked;
 
-        if (!studentName) return showModal("ข้อมูลไม่ครบ", "กรุณากรอก ชื่อ-นามสกุล นักเรียนด้วยครับ", "warning");
         if (!startDate || !endDate || !reason) return showModal("ข้อมูลการลาไม่ครบ", "กรุณาระบุวันที่และเหตุผลการลาให้ชัดเจนครับ", "warning");
         if (isCanvasBlank()) return showModal("ลืมเซ็นชื่อ", "กรุณาเซ็นชื่อผู้ปกครองรับรองการลาด้วยครับ", "warning");
         if (!consent) return showModal("กดยอมรับเงื่อนไข", "กรุณาทำเครื่องหมายถูก (☑) เพื่อรับทราบเงื่อนไขเรื่อง มส ก่อนส่งข้อมูลครับ", "warning");
@@ -315,10 +305,10 @@
         const payload = {
             action: "submitLeave",
             data: {
-                grade: grade,
-                room: room,
-                studentId: studentId,
-                name: studentName,
+                grade: loggedInUser.grade,       // 🌟 ดึงมาจากตัวแปรที่เราเก็บไว้ตอนล็อกอิน
+                room: loggedInUser.room,         
+                studentId: loggedInUser.studentId, 
+                name: loggedInUser.name,         
                 leaveType: leaveType,
                 startDate: startDate,
                 endDate: endDate,
@@ -335,8 +325,8 @@
             btn.innerHTML = '<i class="bi bi-send-fill"></i> ยืนยันส่งใบลาออนไลน์';
 
             if (res.success) {
-                showModal("ส่งใบลาสำเร็จ!", "ระบบได้รับเรื่องการลาของ " + studentName + " เรียบร้อยแล้วครับ", "success");
-                // เคลียร์ฟอร์มบางส่วนให้พร้อมใช้งานต่อ หรือจะเตะออกไปหน้าล็อกอินก็ได้
+                showModal("ส่งใบลาสำเร็จ!", res.message, "success");
+                // เคลียร์ฟอร์มให้พร้อมใช้งานต่อ
                 document.getElementById('leaveReason').value = "";
                 document.getElementById('leaveConsent').checked = false;
                 clearSignature();
