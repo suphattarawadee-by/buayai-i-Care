@@ -98,9 +98,33 @@
         </div>
 
         <h6 class="fw-bold text-danger border-bottom pb-2 mb-3"><i class="bi bi-search"></i> ค้นหานักเรียน</h6>
+        
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <select id="searchGrade" class="form-select border-danger text-danger fw-bold">
+                    <option value="" disabled selected>เลือกระดับชั้น</option>
+                    <option value="ม.1">ม.1</option>
+                    <option value="ม.2">ม.2</option>
+                    <option value="ม.3">ม.3</option>
+                    <option value="ม.4">ม.4</option>
+                    <option value="ม.5">ม.5</option>
+                    <option value="ม.6">ม.6</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <select id="searchRoom" class="form-select border-danger text-danger fw-bold">
+                    <option value="" disabled selected>เลือกห้อง</option>
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+        </div>
+
         <div class="input-group mb-4 shadow-sm">
-            <input type="number" id="searchId" class="form-control" placeholder="ระบุรหัส 5 หลัก..." style="border-radius: 12px 0 0 12px;">
-            <button class="btn btn-dark" onclick="searchStudent()" id="btn-search" style="border-radius: 0 12px 12px 0;"><i class="bi bi-search"></i></button>
+            <input type="number" id="searchId" class="form-control border-danger" placeholder="ระบุรหัส 5 หลัก..." style="border-radius: 12px 0 0 12px;">
+            <button class="btn btn-danger px-4" onclick="searchStudent()" id="btn-search" style="border-radius: 0 12px 12px 0;"><i class="bi bi-search"></i></button>
         </div>
 
         <div id="student-form-box" style="display: none;">
@@ -150,7 +174,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // ==========================================
-    // ⚠️ ใส่ URL Web App ฝั่งตักเตือน ตรงนี้ ⚠️
+    // ⚠️ ใส่ URL Web App ฝั่งตักเตือน อันใหม่ล่าสุด ตรงนี้ ⚠️
     // ==========================================
     const API_URL = "https://script.google.com/macros/s/AKfycbz3SrI_AiWF-4cQwYmMpuQpBoCj6OBxEaV-hJKY99_uWqIvfsTNawIWE3u1Z-7uMIKkEA/exec"; 
 
@@ -219,10 +243,9 @@
         if(viewId === 'search') loadHistory();
     }
 
-    // --- ดึงประกาศภายนอก (content_warning.html) ---
+    // --- ดึงประกาศภายนอก ---
     async function loadAnnouncement() {
         try {
-            // ดึงไฟล์ที่ชื่อ content_warning.html ที่อยู่โฟลเดอร์เดียวกันบน GitHub
             const response = await fetch('content_warning.html');
             if(response.ok) {
                 const text = await response.text();
@@ -235,13 +258,12 @@
         }
     }
 
-    // --- สร้างแบบฟอร์มประเด็น 6 ข้อ ---
+    // --- สร้างแบบฟอร์มประเด็น ---
     function renderWarningCategories() {
         const container = document.getElementById('warning-categories-container');
         container.innerHTML = "";
         
         warningData.forEach((cat, index) => {
-            // สไตล์ HTML ของแต่ละ Card
             let subHtml = cat.subs.map((sub, sIdx) => `
                 <div class="form-check mb-2">
                     <input class="form-check-input" type="radio" name="subCat" id="sub_${cat.id}_${sIdx}" value="${sub}" onchange="selectSubCategory('${cat.title}', '${sub}')">
@@ -249,11 +271,8 @@
                 </div>
             `).join('');
             
-            // เพิ่มกล่อง "ระบุเพิ่มเติม" ถ้ามีคำว่า "อื่น"
             if (cat.subs.some(s => s.includes('อื่น') || s.includes('ระบุ'))) {
-                subHtml += `
-                    <input type="text" id="other_text_${cat.id}" class="form-control form-control-sm mt-2 d-none" placeholder="โปรดระบุรายละเอียด...">
-                `;
+                subHtml += `<input type="text" id="other_text_${cat.id}" class="form-control form-control-sm mt-2 d-none" placeholder="โปรดระบุรายละเอียด...">`;
             }
 
             container.innerHTML += `
@@ -274,20 +293,17 @@
     }
 
     function toggleCategory(id, title) {
-        // ซ่อนทุกอัน
         warningData.forEach(cat => {
             document.getElementById(`body_${cat.id}`).style.display = 'none';
             document.getElementById(`card_${cat.id}`).querySelector('.category-header').classList.remove('selected');
             document.getElementById(`icon_${cat.id}`).classList.replace('bi-chevron-up', 'bi-chevron-down');
         });
         
-        // เคลียร์ค่าที่เคยเลือก
         document.querySelectorAll('input[name="subCat"]').forEach(r => r.checked = false);
         selectedMainCategory = title;
         selectedSubCategory = null;
         document.getElementById('btn-submit').disabled = true;
 
-        // เปิดอันที่คลิก
         document.getElementById(`body_${id}`).style.display = 'block';
         document.getElementById(`card_${id}`).querySelector('.category-header').classList.add('selected');
         document.getElementById(`icon_${id}`).classList.replace('bi-chevron-down', 'bi-chevron-up');
@@ -298,7 +314,6 @@
         selectedSubCategory = sub;
         document.getElementById('btn-submit').disabled = false;
         
-        // จัดการกล่อง "อื่นๆ"
         warningData.forEach(cat => {
             let otherInput = document.getElementById(`other_text_${cat.id}`);
             if(otherInput) {
@@ -328,8 +343,8 @@
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('hamburger-btn').style.display = 'block';
                 
-                renderWarningCategories(); // สร้างฟอร์มเตรียมไว้
-                loadAnnouncement(); // โหลดประกาศ
+                renderWarningCategories(); 
+                loadAnnouncement(); 
                 switchView('record');
             } else {
                 showModal("ล้มเหลว", res.error, "error");
@@ -349,20 +364,25 @@
         toggleSidebar();
     }
 
-    // --- ค้นหานักเรียน ---
+    // --- 🌟 ค้นหานักเรียน (ส่งค่า ชั้น และ ห้อง ไปด้วย) ---
     async function searchStudent() {
+        const grade = document.getElementById('searchGrade').value;
+        const room = document.getElementById('searchRoom').value;
         const id = document.getElementById('searchId').value.trim();
-        if(!id) return;
+        
+        if(!grade || !room) return showModal("ลืมเลือกชั้นเรียน", "กรุณาเลือกระดับชั้นและห้องก่อนกดค้นหาครับ", "warning");
+        if(!id) return showModal("ข้อมูลไม่ครบ", "กรุณาระบุรหัสนักเรียน 5 หลักครับ", "warning");
         
         const btn = document.getElementById('btn-search');
         btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>'; btn.disabled = true;
 
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "searchStudent", studentId: id }) }).then(r=>r.json());
+            const payload = { action: "searchStudent", studentId: id, grade: grade, room: room };
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r=>r.json());
+            
             if(res.success) {
                 currentStudent = { id: id, name: res.name, room: res.room };
                 
-                // โชว์รูปก่อน ตามที่ครูสั่ง
                 const imgBox = document.getElementById('profile-img-box');
                 if (res.imageUrl && res.imageUrl !== "") {
                     let fileId = res.imageUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) ? res.imageUrl.match(/\/d\/([a-zA-Z0-9_-]+)/)[1] : (res.imageUrl.includes('id=') ? new URLSearchParams(res.imageUrl.substring(res.imageUrl.indexOf('?'))).get('id') : "");
@@ -372,10 +392,8 @@
                 document.getElementById('res-name').innerText = res.name;
                 document.getElementById('res-class').innerText = "รหัส: " + id + " | ชั้น " + res.room;
                 
-                // รีเซ็ตฟอร์มตักเตือน
                 renderWarningCategories(); 
                 document.getElementById('btn-submit').disabled = true;
-                
                 document.getElementById('student-form-box').style.display = 'block';
             } else {
                 showModal("ไม่พบข้อมูล", res.error, "error");
@@ -391,7 +409,6 @@
     async function submitWarning() {
         if(!currentStudent || !selectedMainCategory || !selectedSubCategory) return;
         
-        // เช็คว่ากรอกข้อมูลช่อง "อื่นๆ" หรือยัง
         let otherText = "";
         let activeCatId = warningData.find(c => c.title === selectedMainCategory).id;
         let otherInput = document.getElementById(`other_text_${activeCatId}`);
@@ -431,7 +448,7 @@
         btn.innerHTML = '<i class="bi bi-save"></i> บันทึกการตักเตือน'; btn.disabled = false;
     }
 
-    // --- ค้นหาประวัติที่เคยตักเตือน ---
+    // --- ค้นหาประวัติ ---
     async function loadHistory() {
         if(!currentAdmin) return;
         const container = document.getElementById('history-container');
@@ -441,7 +458,6 @@
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "getHistory", adminName: currentAdmin }) }).then(r=>r.json());
             if(res.success && res.data.length > 0) {
                 
-                // จัดกลุ่มประวัติตาม "ชั้น"
                 let grouped = {};
                 res.data.forEach(item => {
                     let c = item.room || "ไม่ระบุชั้น";
