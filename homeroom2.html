@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกโฮมรูม Buayai I Care - โรงเรียนบัวใหญ่</title>
+    <title>ระบบบันทึกโฮมรูม Buayai I Care</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -135,18 +135,16 @@
                             <h5 class="section-title"><i class="bi bi-ui-checks-grid me-2"></i>หัวข้อการโฮมรูม</h5>
                             
                             <div class="form-check form-check-custom"><input class="form-check-input fs-5" type="checkbox" id="chk-announce" onchange="toggleInput('input-announce', this)"><label class="form-check-label w-100" for="chk-announce">1. แจ้งข่าวประกาศ / อบรมหน้าเสาธง<div id="input-announce" class="hidden-input"><input type="text" class="form-control" id="val-announce" placeholder="ระบุเรื่องที่แจ้งนักเรียน..."></div></label></div>
-                            <div class="form-check form-check-custom"><input class="form-check-input fs-5" type="checkbox" id="chk-nail" onchange="toggleInput('input-nail', this)"><label class="form-check-label w-100" for="chk-nail">2. ติดตามการตรวจระเบียบ / ตรวจเล็บ<div id="input-nail" class="hidden-input mt-2 d-flex align-items-center gap-2"><span>พบ:</span><input type="number" class="form-control w-25 text-center" id="val-nail" placeholder="0"><span>คน</span></div></label></div>
+                            <div class="form-check form-check-custom"><input class="form-check-input fs-5" type="checkbox" id="chk-nail" onchange="toggleInput('input-nail', this)"><label class="form-check-label w-100" for="chk-nail">2. ติดตามการตรวจระเบียบ / ตรวจสุขภาพ<div id="input-nail" class="hidden-input mt-2 d-flex align-items-center gap-2"><span>พบ:</span><input type="number" class="form-control w-25 text-center" id="val-nail" placeholder="0"><span>คน</span></div></label></div>
                             <div class="form-check form-check-custom"><input class="form-check-input fs-5" type="checkbox" id="chk-parent" onchange="toggleInput('input-parent', this)"><label class="form-check-label w-100" for="chk-parent">3. ประสานงานกับผู้ปกครอง<div id="input-parent" class="hidden-input mt-2"><div class="d-flex gap-3 mb-2 flex-wrap"><div class="form-check"><input class="form-check-input" type="checkbox" id="p-grade" value="ผลการเรียน"><label class="form-check-label" for="p-grade">ผลการเรียน</label></div><div class="form-check"><input class="form-check-input" type="checkbox" id="p-beh" value="ความประพฤติ"><label class="form-check-label" for="p-beh">ความประพฤติ</label></div></div><input type="text" class="form-control" id="val-parent-other" placeholder="เรื่องอื่นๆ..."></div></label></div>
                             <div class="form-check form-check-custom"><input class="form-check-input fs-5" type="checkbox" id="chk-scholar" onchange="toggleInput('input-scholar', this)"><label class="form-check-label w-100" for="chk-scholar">4. ประสานงานการมอบทุนการศึกษา<div id="input-scholar" class="hidden-input mt-2"><div id="scholar-list"><div class="input-group mb-2"><span class="input-group-text bg-light border-end-0">รายชื่อ 1</span><input type="text" class="form-control scholar-name border-start-0" placeholder="ชื่อ-สกุล นักเรียนรับทุน"></div></div><button class="btn btn-sm btn-outline-primary rounded-pill mt-1" onclick="addScholarRow()"><i class="bi bi-plus-circle"></i> เพิ่มรายชื่อนักเรียน</button></div></label></div>
                             
                             <div class="form-check form-check-custom position-relative">
                                 <input class="form-check-input fs-5" type="checkbox" id="chk-other" onchange="toggleInput('input-other', this)">
                                 <label class="form-check-label w-100" for="chk-other">5. เรื่องอื่นๆ (โปรดระบุ)</label>
-                                
                                 <button type="button" class="btn btn-sm btn-primary rounded-pill position-absolute shadow-sm" style="right: 15px; top: 12px; z-index: 10;" onclick="openSummaryPullerModal()">
                                     <i class="bi bi-cloud-arrow-down me-1"></i> ดึงสรุปการตรวจ
                                 </button>
-                                
                                 <div id="input-other" class="hidden-input mt-2">
                                     <textarea class="form-control" rows="3" placeholder="พิมพ์รายละเอียดเพิ่มเติม หรือกดปุ่ม 'ดึงสรุปการตรวจ' ด้านบน..." id="val-other"></textarea>
                                 </div>
@@ -260,7 +258,13 @@
 
             <div id="view-head-dashboard" style="display: none;">
                 <div class="d-flex justify-content-between align-items-end mb-4"><div><h3 class="fw-bold text-dark m-0"><i class="bi bi-inboxes-fill text-warning me-2"></i>รายงานที่รอตรวจสอบ</h3><p class="text-muted m-0" id="head-dashboard-subtitle">ระดับชั้นมัธยมศึกษา</p></div></div>
-                <div class="content-card p-0 overflow-auto"><table class="table table-hover mb-0 align-middle"><thead class="table-light"><tr><th class="py-3 px-4">ห้อง</th><th>ผู้ส่ง (ครูที่ปรึกษา)</th><th>สถานะ</th><th class="text-center">จัดการ</th></tr></thead><tbody id="head-table-body"><tr><td class="px-4 fw-bold text-primary">ม.2/1</td><td>ครูที่ปรึกษา ม.2/1</td><td id="head-status-td"><span class="badge bg-secondary">ยังไม่ส่งรายงาน</span></td><td class="text-center"><button class="btn btn-sm btn-primary rounded-pill px-3" id="btn-review-m21" onclick="openReviewModal('ม.2/1')">ตรวจเอกสาร</button></td></tr></tbody></table></div>
+                <div class="content-card p-0 overflow-auto">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light"><tr><th class="py-3 px-4">ห้อง</th><th>ผู้ส่ง (ครูที่ปรึกษา)</th><th>สถานะ</th><th class="text-center">จัดการ</th></tr></thead>
+                        <tbody id="head-table-body">
+                            </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
@@ -268,24 +272,7 @@
 
     <div class="modal fade" id="reviewModal" tabindex="-1" data-bs-backdrop="static"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content border-0 shadow-lg" style="border-radius: 20px;"><div class="modal-header bg-warning border-0 px-4 py-3"><h5 class="fw-bold m-0 text-dark"><i class="bi bi-search me-2"></i>ตรวจสอบรายงานโฮมรูม: <span id="review-room"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body p-4 bg-light"><div class="bg-white p-3 rounded-3 border mb-3 shadow-sm"><h6 class="fw-bold text-primary mb-2">บันทึกข้อมูลในสัปดาห์นี้</h6><table class="table table-sm table-bordered small mb-0"><tr class="table-light"><th width="20%">วันที่</th><th>รายการ</th></tr><tbody id="review-table-body"><tr><td colspan="2" class="text-center py-4"><span class="spinner-border spinner-border-sm text-primary"></span> กำลังดึงข้อมูล...</td></tr></tbody></table></div><div class="alert alert-info border-0 rounded-3 mb-4"><b class="text-dark"><i class="bi bi-chat-left-text-fill text-primary"></i> หมายเหตุจากครูที่ปรึกษา:</b><br><span id="review-teacher-note">กำลังโหลด...</span></div><div class="p-3 bg-white border rounded-3 shadow-sm"><label class="fw-bold text-dark mb-1">หมายเหตุกลับไปให้ครูที่ปรึกษา (ถ้ามี)</label><input type="text" id="head-remark" class="form-control mb-3" placeholder="เช่น รับทราบเรียบร้อยครับ ขอบคุณมากครับ"><label class="fw-bold text-dark mb-1">อัปโหลดลายมือชื่อ (เพื่อเซ็นรับทราบ)</label><div class="d-flex align-items-center gap-3"><div class="position-relative overflow-hidden d-inline-block"><button class="btn btn-outline-primary"><i class="bi bi-upload me-1"></i> เลือกไฟล์รูปลายเซ็น</button><input type="file" id="sig-upload" accept="image/*" onchange="previewSignature(event)" style="font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer;" /></div><img id="sig-preview" class="preview-sig-img border rounded" src="" style="display: none; background: #fff;"></div></div></div><div class="modal-footer border-0 justify-content-center bg-white pb-4"><button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิดหน้าต่าง</button><button id="btn-approve" type="button" class="btn btn-success rounded-pill px-5 fw-bold shadow" onclick="headApproveReport()"><i class="bi bi-check2-all me-1"></i> รับทราบและอนุมัติ</button></div></div></div></div>
 
-    <div class="modal fade" id="pullSummaryModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-                <div class="modal-header bg-primary text-white border-0 px-4 py-3">
-                    <h5 class="fw-bold m-0"><i class="bi bi-cloud-arrow-down me-2"></i>ดึงข้อมูลสรุปการตรวจ</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4 bg-light">
-                    <p class="small text-muted mb-3">เลือกสรุปผลการตรวจที่ต้องการนำไปใส่ในบันทึกโฮมรูม (เลือกได้หลายรายการ)</p>
-                    <div id="pull-summary-loading" class="text-center py-4"><span class="spinner-border text-primary"></span><div class="mt-2 text-muted small">กำลังดึงข้อมูล...</div></div>
-                    <div id="pull-summary-list" class="d-none" style="max-height: 350px; overflow-y: auto;"></div>
-                </div>
-                <div class="modal-footer border-0 justify-content-center bg-white pb-4">
-                    <button type="button" class="btn btn-success rounded-pill px-5 fw-bold shadow" onclick="insertSelectedSummaries()"><i class="bi bi-check2-square me-1"></i> นำไปใส่ในเรื่องอื่นๆ</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="modal fade" id="pullSummaryModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow-lg" style="border-radius: 20px;"><div class="modal-header bg-primary text-white border-0 px-4 py-3"><h5 class="fw-bold m-0"><i class="bi bi-cloud-arrow-down me-2"></i>ดึงข้อมูลสรุปการตรวจ</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body p-4 bg-light"><p class="small text-muted mb-3">เลือกสรุปผลการตรวจที่ต้องการนำไปใส่ในบันทึกโฮมรูม (เลือกได้หลายรายการ)</p><div id="pull-summary-loading" class="text-center py-4"><span class="spinner-border text-primary"></span><div class="mt-2 text-muted small">กำลังดึงข้อมูล...</div></div><div id="pull-summary-list" class="d-none" style="max-height: 350px; overflow-y: auto;"></div></div><div class="modal-footer border-0 justify-content-center bg-white pb-4"><button type="button" class="btn btn-success rounded-pill px-5 fw-bold shadow" onclick="insertSelectedSummaries()"><i class="bi bi-check2-square me-1"></i> นำไปใส่ในเรื่องอื่นๆ</button></div></div></div></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -300,49 +287,33 @@
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
                 return data;
-            } catch (error) {
-                console.error("API Fetch Error:", error);
-                throw error;
-            }
+            } catch (error) { console.error(error); throw error; }
         }
 
-        function formatISODate(dateObj) {
-            const tzOffset = dateObj.getTimezoneOffset() * 60000;
-            return (new Date(dateObj.getTime() - tzOffset)).toISOString().split('T')[0];
-        }
+        function formatISODate(dateObj) { const tzOffset = dateObj.getTimezoneOffset() * 60000; return (new Date(dateObj.getTime() - tzOffset)).toISOString().split('T')[0]; }
 
         let appState = { role: null, room: null, name: null, currentStatsStr: "", students: [], inspResults: [], currentInspCat: "", reportDetails: "", teacherNote: "", isSubmitted: false, isApproved: false, headRemark: "", headSignatureData: "" };
         const now = new Date();
 
         function toggleSidebar() {
-            const sidebar = document.getElementById('mainSidebar');
-            const overlay = document.getElementById('sidebar-overlay');
+            const sidebar = document.getElementById('mainSidebar'); const overlay = document.getElementById('sidebar-overlay');
             if(sidebar.classList.contains('show')) { sidebar.classList.remove('show'); overlay.style.display = 'none'; } 
             else { sidebar.classList.add('show'); overlay.style.display = 'block'; }
         }
 
         async function handleLogin() {
-            const input = document.getElementById('login-username').value.trim().toLowerCase();
-            if(!input) return;
-            document.getElementById('login-error').style.display = 'none';
-            document.getElementById('btn-login').innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังเข้าสู่ระบบ...';
-            document.getElementById('btn-login').disabled = true;
+            const input = document.getElementById('login-username').value.trim().toLowerCase(); if(!input) return;
+            document.getElementById('login-error').style.display = 'none'; document.getElementById('btn-login').innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังเข้าสู่ระบบ...'; document.getElementById('btn-login').disabled = true;
             try {
                 const res = await sendToAPI({ action: 'login', userId: input });
-                if (res.success) {
-                    appState.role = res.role; appState.room = res.room; appState.name = res.name;
-                    setupUI();
-                } else {
-                    document.getElementById('login-error').innerText = res.error; document.getElementById('login-error').style.display = 'block';
-                }
+                if (res.success) { appState.role = res.role; appState.room = res.room; appState.name = res.name; setupUI(); } 
+                else { document.getElementById('login-error').innerText = res.error; document.getElementById('login-error').style.display = 'block'; }
             } catch(e) { alert("เชื่อมต่อฐานข้อมูลล้มเหลว"); } 
             finally { document.getElementById('btn-login').innerHTML = 'เข้าสู่ระบบ'; document.getElementById('btn-login').disabled = false; }
         }
 
         function setupUI() {
-            document.getElementById('login-view').style.display = 'none';
-            document.getElementById('app-view').style.display = 'block';
-            document.getElementById('top-user-name').innerText = appState.name;
+            document.getElementById('login-view').style.display = 'none'; document.getElementById('app-view').style.display = 'block'; document.getElementById('top-user-name').innerText = appState.name;
             
             if (appState.role === 'teacher') {
                 document.getElementById('menu-teacher').style.display = 'block';
@@ -353,203 +324,112 @@
                 let html = ''; teacherNames.forEach(n => html += `<div><div class="sign-line mt-3"></div><p class="mb-0">( <span class="fw-bold">${n}</span> )</p><small class="text-muted">ครูที่ปรึกษา</small></div>`);
                 document.getElementById('print-teachers-container').innerHTML = html;
                 
-                const d = formatISODate(now);
-                document.getElementById('record-date-input').value = d; 
-                document.getElementById('insp-inline-date').value = d; 
-                document.getElementById('week-selector').value = d; 
-                document.getElementById('print-month-selector').value = d.substring(0, 7);
-                
+                const d = formatISODate(now); document.getElementById('record-date-input').value = d; document.getElementById('insp-inline-date').value = d; document.getElementById('week-selector').value = d; document.getElementById('print-month-selector').value = d.substring(0, 7);
                 fetchDailyStats(); generateTimeline(); switchMenu('record');
             } else {
                 document.getElementById('menu-teacher').style.display = 'none'; document.getElementById('menu-head').style.display = 'block';
                 document.getElementById('head-dashboard-subtitle').innerText = appState.room;
                 switchMenu('head-dashboard');
+                loadHeadDashboard(); // 🌟 โหลดตารางหัวหน้า 10 ห้องทันที
             }
         }
+        
         function logout() { location.reload(); }
+        
         function switchMenu(menuId, el) {
             if(el) { document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active', 'active-head')); el.classList.add(appState.role === 'head' ? 'active-head' : 'active'); toggleSidebar(); }
-            document.querySelectorAll('.main-content > div').forEach(d => d.style.display = 'none');
-            document.getElementById('view-' + menuId).style.display = 'block';
+            document.querySelectorAll('.main-content > div').forEach(d => d.style.display = 'none'); document.getElementById('view-' + menuId).style.display = 'block';
             if (menuId === 'print') generatePrintReport();
         }
-        function toggleInput(id, cb) { document.getElementById(id).style.display = cb.checked ? 'block' : 'none'; }
         
-        let scholarCount = 1;
-        function addScholarRow() { scholarCount++; const list = document.getElementById('scholar-list'); const newRow = document.createElement('div'); newRow.className = 'input-group mb-2'; newRow.innerHTML = `<span class="input-group-text bg-light border-end-0">รายชื่อ ${scholarCount}</span><input type="text" class="form-control scholar-name border-start-0" placeholder="ชื่อ-สกุล นักเรียนรับทุน">`; list.appendChild(newRow); }
+        function toggleInput(id, cb) { document.getElementById(id).style.display = cb.checked ? 'block' : 'none'; }
+        let scholarCount = 1; function addScholarRow() { scholarCount++; const list = document.getElementById('scholar-list'); const newRow = document.createElement('div'); newRow.className = 'input-group mb-2'; newRow.innerHTML = `<span class="input-group-text bg-light border-end-0">รายชื่อ ${scholarCount}</span><input type="text" class="form-control scholar-name border-start-0" placeholder="ชื่อ-สกุล นักเรียนรับทุน">`; list.appendChild(newRow); }
 
         async function fetchDailyStats() {
-            const dateVal = document.getElementById('record-date-input').value;
-            if (!dateVal) return;
+            const dateVal = document.getElementById('record-date-input').value; if (!dateVal) return;
             document.getElementById('stat-total-val').innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
             try {
                 const res = await sendToAPI({ action: 'getStats', room: appState.room, date: dateVal });
                 if (res && res.stats) {
-                    document.getElementById('stat-total-val').innerText = res.stats.total; document.getElementById('stat-present-val').innerText = res.stats.present;
-                    document.getElementById('stat-late-val').innerText = res.stats.late; document.getElementById('stat-leave-val').innerText = res.stats.leave; document.getElementById('stat-absent-val').innerText = res.stats.absent;
-                    appState.currentStatsStr = `รวม ${res.stats.total} | มา ${res.stats.present} | สาย ${res.stats.late} | ลา ${res.stats.leave} | ขาด ${res.stats.absent}`;
-                    document.getElementById('stat-status-text').innerText = '* ดึงสถิติล่าสุดเรียบร้อยแล้ว';
+                    document.getElementById('stat-total-val').innerText = res.stats.total; document.getElementById('stat-present-val').innerText = res.stats.present; document.getElementById('stat-late-val').innerText = res.stats.late; document.getElementById('stat-leave-val').innerText = res.stats.leave; document.getElementById('stat-absent-val').innerText = res.stats.absent;
+                    appState.currentStatsStr = `รวม ${res.stats.total} | มา ${res.stats.present} | สาย ${res.stats.late} | ลา ${res.stats.leave} | ขาด ${res.stats.absent}`; document.getElementById('stat-status-text').innerText = '* ดึงสถิติล่าสุดเรียบร้อยแล้ว';
                 }
             } catch(e) { appState.currentStatsStr = "ไม่พบสถิติ"; document.getElementById('stat-total-val').innerText = '?'; }
         }
 
-        // ====================================================
-        // 1. บันทึกโฮมรูม
-        // ====================================================
         async function saveRecord() {
             let details = [];
             if(document.getElementById('chk-announce').checked) details.push(`<b>1. ประกาศ:</b> ${document.getElementById('val-announce').value || '(ไม่ระบุ)'}`);
             if(document.getElementById('chk-nail').checked) details.push(`<b>2. ตรวจสุขภาพ:</b> พบ ${document.getElementById('val-nail').value || 0} คน`);
             if(document.getElementById('chk-parent').checked) {
-                let pTopics = [];
-                if(document.getElementById('p-grade').checked) pTopics.push("ผลการเรียน");
-                if(document.getElementById('p-beh').checked) pTopics.push("ความประพฤติ");
-                let pOther = document.getElementById('val-parent-other').value;
-                if(pOther) pTopics.push(pOther);
+                let pTopics = []; if(document.getElementById('p-grade').checked) pTopics.push("ผลการเรียน"); if(document.getElementById('p-beh').checked) pTopics.push("ความประพฤติ");
+                let pOther = document.getElementById('val-parent-other').value; if(pOther) pTopics.push(pOther);
                 details.push(`<b>3. ติดต่อ ผปค.:</b> ${pTopics.length > 0 ? pTopics.join(', ') : '(ไม่ระบุ)'}`);
             }
             if(document.getElementById('chk-scholar').checked) {
-                let scholars = [];
-                document.querySelectorAll('.scholar-name').forEach(el => { if(el.value) scholars.push(el.value); });
+                let scholars = []; document.querySelectorAll('.scholar-name').forEach(el => { if(el.value) scholars.push(el.value); });
                 details.push(`<b>4. มอบทุน:</b> ${scholars.length} ราย (${scholars.join(', ')})`);
             }
             if(document.getElementById('chk-other').checked) details.push(`<b>5. อื่นๆ:</b> ${document.getElementById('val-other').value || '(ไม่ระบุ)'}`);
-            
             if(details.length === 0) return alert("กรุณาเลือกบันทึกอย่างน้อย 1 รายการ");
             
-            const btn = document.getElementById('btn-save-record');
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังบันทึก...'; btn.disabled = true;
-
+            const btn = document.getElementById('btn-save-record'); btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังบันทึก...'; btn.disabled = true;
             try {
                 await sendToAPI({ action: 'saveRecord', room: appState.room, date: document.getElementById('record-date-input').value, details: details.join('<br><br>'), stats: appState.currentStatsStr || "ไม่มีข้อมูลสถิติ" });
-                alert("✨ บันทึกข้อมูลโฮมรูมเรียบร้อยแล้วครับ");
-                document.getElementById('week-selector').value = document.getElementById('record-date-input').value;
-                switchMenu('submit', document.querySelectorAll('.nav-link')[3]);
-                generateTimeline(); 
-            } catch(e) { alert("❌ มีปัญหาการเชื่อมต่อ"); } 
-            finally { btn.innerHTML = '<i class="bi bi-save2-fill me-2"></i> บันทึกข้อมูล'; btn.disabled = false; }
+                alert("✨ บันทึกข้อมูลโฮมรูมเรียบร้อยแล้วครับ"); document.getElementById('week-selector').value = document.getElementById('record-date-input').value; switchMenu('submit', document.querySelectorAll('.nav-link')[3]); generateTimeline(); 
+            } catch(e) { alert("❌ มีปัญหาการเชื่อมต่อ"); } finally { btn.innerHTML = '<i class="bi bi-save2-fill me-2"></i> บันทึกข้อมูล'; btn.disabled = false; }
         }
 
-        // ====================================================
-        // 🌟 2. ระบบดึงข้อมูลสรุปให้ครูเลือกติ๊ก (ใหม่)
-        // ====================================================
         const pullSummaryModal = new bootstrap.Modal(document.getElementById('pullSummaryModal'));
-        
         async function openSummaryPullerModal() {
-            pullSummaryModal.show();
-            document.getElementById('pull-summary-loading').classList.remove('d-none');
-            document.getElementById('pull-summary-list').classList.add('d-none');
-            
+            pullSummaryModal.show(); document.getElementById('pull-summary-loading').classList.remove('d-none'); document.getElementById('pull-summary-list').classList.add('d-none');
             try {
                 const res = await sendToAPI({ action: "getAllInspectionsSummary", room: appState.room });
                 if(res.success && res.summaries.length > 0) {
                     let html = '';
-                    res.summaries.forEach((s, idx) => {
-                        html += `
-                        <label class="form-check mb-2 bg-white p-3 border rounded-3 shadow-sm d-flex align-items-start" style="cursor: pointer;">
-                            <input class="form-check-input mt-1 me-2" type="checkbox" value="${s.text}" id="sum_chk_${idx}">
-                            <div class="small text-dark">
-                                <span class="badge bg-primary mb-1"><i class="bi bi-calendar-event"></i> วันที่ ${s.date}</span><br>
-                                ${s.text}
-                            </div>
-                        </label>`;
-                    });
+                    res.summaries.forEach((s, idx) => { html += `<label class="form-check mb-2 bg-white p-3 border rounded-3 shadow-sm d-flex align-items-start" style="cursor: pointer;"><input class="form-check-input mt-1 me-2" type="checkbox" value="${s.text}" id="sum_chk_${idx}"><div class="small text-dark"><span class="badge bg-primary mb-1"><i class="bi bi-calendar-event"></i> วันที่ ${s.date}</span><br>${s.text}</div></label>`; });
                     document.getElementById('pull-summary-list').innerHTML = html;
-                } else {
-                    document.getElementById('pull-summary-list').innerHTML = '<div class="text-center text-muted py-3">ไม่พบประวัติการตรวจในฐานข้อมูล</div>';
-                }
-            } catch(e) {
-                document.getElementById('pull-summary-list').innerHTML = '<div class="text-center text-danger py-3">ดึงข้อมูลล้มเหลว</div>';
-            }
-            
-            document.getElementById('pull-summary-loading').classList.add('d-none');
-            document.getElementById('pull-summary-list').classList.remove('d-none');
+                } else { document.getElementById('pull-summary-list').innerHTML = '<div class="text-center text-muted py-3">ไม่พบประวัติการตรวจในฐานข้อมูล</div>'; }
+            } catch(e) { document.getElementById('pull-summary-list').innerHTML = '<div class="text-center text-danger py-3">ดึงข้อมูลล้มเหลว</div>'; }
+            document.getElementById('pull-summary-loading').classList.add('d-none'); document.getElementById('pull-summary-list').classList.remove('d-none');
         }
-        
         function insertSelectedSummaries() {
-            let selected = [];
-            document.querySelectorAll('#pull-summary-list input[type="checkbox"]:checked').forEach(cb => {
-                selected.push(cb.value);
-            });
-            
+            let selected = []; document.querySelectorAll('#pull-summary-list input[type="checkbox"]:checked').forEach(cb => { selected.push(cb.value); });
             if(selected.length > 0) {
-                let otherBox = document.getElementById('val-other');
-                let currentText = otherBox.value.trim();
-                let newText = selected.join('\n');
+                let otherBox = document.getElementById('val-other'); let currentText = otherBox.value.trim(); let newText = selected.join('\n');
                 otherBox.value = currentText ? (currentText + '\n\n' + newText) : newText;
-                
-                // ติ๊กถูกที่ข้อ 5 และเปิดกล่องข้อความให้ทันที
-                document.getElementById('chk-other').checked = true;
-                document.getElementById('input-other').style.display = 'block';
+                document.getElementById('chk-other').checked = true; document.getElementById('input-other').style.display = 'block';
             }
             pullSummaryModal.hide();
         }
 
-        // ====================================================
-        // 3. ฟอร์มตรวจระเบียบ (แก้ไขให้เซฟเงียบๆ ไม่เด้งเข้าข้อ 5 อัตโนมัติแล้ว)
-        // ====================================================
         let inspPageInline = 0; const INSP_PER_PAGE_INLINE = 10;
         function checkInlineInspOther() { document.getElementById('insp-inline-other').style.display = (document.getElementById('insp-inline-cat').value === 'อื่นๆ') ? 'block' : 'none'; }
-
         async function startInlineInspection() {
-            let cat = document.getElementById('insp-inline-cat').value;
-            if(cat === 'อื่นๆ') cat = document.getElementById('insp-inline-other').value.trim();
-            if(!cat) return alert("กรุณาเลือกหมวดหมู่ที่ตรวจก่อนครับ");
-
-            appState.currentInspCat = cat;
-            document.getElementById('insp-inline-container').classList.add('d-none');
-            document.getElementById('insp-inline-loading').classList.remove('d-none');
-
+            let cat = document.getElementById('insp-inline-cat').value; if(cat === 'อื่นๆ') cat = document.getElementById('insp-inline-other').value.trim(); if(!cat) return alert("กรุณาเลือกหมวดหมู่ที่ตรวจก่อนครับ");
+            appState.currentInspCat = cat; document.getElementById('insp-inline-container').classList.add('d-none'); document.getElementById('insp-inline-loading').classList.remove('d-none');
             if (appState.students.length === 0) {
                 try {
                     const res = await sendToAPI({ action: "getStudents", room: appState.room });
-                    if(res.success) {
-                        appState.students = res.students;
-                        appState.inspResults = appState.students.map(s => ({ id: s.id, name: s.name, status: "ผ่าน", isChecked: false }));
-                    } else { alert(res.error); document.getElementById('insp-inline-loading').classList.add('d-none'); return; }
+                    if(res.success) { appState.students = res.students; appState.inspResults = appState.students.map(s => ({ id: s.id, name: s.name, status: "ผ่าน", isChecked: false })); } 
+                    else { alert(res.error); document.getElementById('insp-inline-loading').classList.add('d-none'); return; }
                 } catch(e) { alert("เชื่อมต่อล้มเหลว"); document.getElementById('insp-inline-loading').classList.add('d-none'); return; }
-            } else {
-                appState.inspResults.forEach(s => { s.status = "ผ่าน"; s.isChecked = false; });
-            }
-
-            inspPageInline = 0;
-            document.getElementById('insp-inline-loading').classList.add('d-none');
-            document.getElementById('insp-inline-container').classList.remove('d-none');
-            renderInlineInspPage();
+            } else { appState.inspResults.forEach(s => { s.status = "ผ่าน"; s.isChecked = false; }); }
+            inspPageInline = 0; document.getElementById('insp-inline-loading').classList.add('d-none'); document.getElementById('insp-inline-container').classList.remove('d-none'); renderInlineInspPage();
         }
-
         function renderInlineInspPage() {
-            const list = document.getElementById('insp-inline-list');
-            let html = '';
-            let start = inspPageInline * INSP_PER_PAGE_INLINE;
-            let end = Math.min(start + INSP_PER_PAGE_INLINE, appState.inspResults.length);
-            
+            const list = document.getElementById('insp-inline-list'); let html = ''; let start = inspPageInline * INSP_PER_PAGE_INLINE; let end = Math.min(start + INSP_PER_PAGE_INLINE, appState.inspResults.length);
             for(let i = start; i < end; i++) {
                 let s = appState.inspResults[i];
                 if (s.isChecked) {
                     let badgeClass = s.status === 'ผ่าน' ? 'bg-success' : s.status === 'ไม่ผ่าน' ? 'bg-danger' : s.status === 'ตักเตือน' ? 'bg-warning text-dark' : 'bg-secondary';
                     html += `<div class="insp-student-row collapsed d-flex justify-content-between align-items-center"><span class="fw-bold text-dark">${i+1}. ${s.name}</span><div><span class="badge ${badgeClass} summary-badge me-2">${s.status}</span><button class="btn btn-sm btn-outline-primary rounded-pill py-0" onclick="editInlineInspRow(${i})"><i class="bi bi-pencil"></i> แก้ไข</button></div></div>`;
                 } else {
-                    html += `
-                    <div class="insp-student-row shadow-sm">
-                        <div class="fw-bold text-primary border-bottom pb-2">${i+1}. ${s.name}</div>
-                        <div class="insp-radio-group">
-                            <input type="radio" class="btn-check btn-check-custom" name="in_insp_${i}" id="in_p_${i}" autocomplete="off" ${s.status==='ผ่าน'?'checked':''} onchange="setInlineInspStatus(${i}, 'ผ่าน')">
-                            <label class="btn btn-outline-success pass" for="in_p_${i}">ผ่าน</label>
-                            <input type="radio" class="btn-check btn-check-custom" name="in_insp_${i}" id="in_f_${i}" autocomplete="off" ${s.status==='ไม่ผ่าน'?'checked':''} onchange="setInlineInspStatus(${i}, 'ไม่ผ่าน')">
-                            <label class="btn btn-outline-danger fail" for="in_f_${i}">ไม่ผ่าน</label>
-                            <input type="radio" class="btn-check btn-check-custom" name="in_insp_${i}" id="in_w_${i}" autocomplete="off" ${s.status==='ตักเตือน'?'checked':''} onchange="setInlineInspStatus(${i}, 'ตักเตือน')">
-                            <label class="btn btn-outline-warning warn" for="in_w_${i}">ตักเตือน</label>
-                        </div>
-                    </div>`;
+                    html += `<div class="insp-student-row shadow-sm"><div class="fw-bold text-primary border-bottom pb-2">${i+1}. ${s.name}</div><div class="insp-radio-group"><input type="radio" class="btn-check btn-check-custom" name="in_insp_${i}" id="in_p_${i}" autocomplete="off" ${s.status==='ผ่าน'?'checked':''} onchange="setInlineInspStatus(${i}, 'ผ่าน')"><label class="btn btn-outline-success pass" for="in_p_${i}">ผ่าน</label><input type="radio" class="btn-check btn-check-custom" name="in_insp_${i}" id="in_f_${i}" autocomplete="off" ${s.status==='ไม่ผ่าน'?'checked':''} onchange="setInlineInspStatus(${i}, 'ไม่ผ่าน')"><label class="btn btn-outline-danger fail" for="in_f_${i}">ไม่ผ่าน</label><input type="radio" class="btn-check btn-check-custom" name="in_insp_${i}" id="in_w_${i}" autocomplete="off" ${s.status==='ตักเตือน'?'checked':''} onchange="setInlineInspStatus(${i}, 'ตักเตือน')"><label class="btn btn-outline-warning warn" for="in_w_${i}">ตักเตือน</label></div></div>`;
                 }
             }
-            list.innerHTML = html;
-            document.getElementById('btn-insp-prev-in').disabled = (inspPageInline === 0);
-            document.getElementById('btn-insp-next-in').disabled = (end >= appState.inspResults.length);
-            document.getElementById('insp-inline-page-info').innerText = `หน้า ${inspPageInline + 1} / ${Math.ceil(appState.inspResults.length / INSP_PER_PAGE_INLINE)}`;
+            list.innerHTML = html; document.getElementById('btn-insp-prev-in').disabled = (inspPageInline === 0); document.getElementById('btn-insp-next-in').disabled = (end >= appState.inspResults.length); document.getElementById('insp-inline-page-info').innerText = `หน้า ${inspPageInline + 1} / ${Math.ceil(appState.inspResults.length / INSP_PER_PAGE_INLINE)}`;
         }
-
         function setInlineInspStatus(index, status) { appState.inspResults[index].status = status; appState.inspResults[index].isChecked = true; renderInlineInspPage(); }
         function editInlineInspRow(index) { appState.inspResults[index].isChecked = false; renderInlineInspPage(); }
         function prevInlineInspPage() { if(inspPageInline > 0) { inspPageInline--; renderInlineInspPage(); } }
@@ -558,29 +438,20 @@
 
         async function saveStandaloneInspection() {
             let inspectionsToSave = appState.inspResults.filter(s => s.status !== 'ผ่าน' && s.status !== 'ยังไม่ตรวจ').map(s => ({ id: s.id, name: s.name, status: s.status }));
-            const btn = document.getElementById('btn-save-inspection');
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังบันทึก...'; btn.disabled = true;
+            const btn = document.getElementById('btn-save-inspection'); btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังบันทึก...'; btn.disabled = true;
             try {
                 await sendToAPI({ action: 'saveInspection', room: appState.room, date: document.getElementById('insp-inline-date').value, category: appState.currentInspCat, inspections: inspectionsToSave });
-                alert("✨ บันทึกผลการตรวจระเบียบลงฐานข้อมูลเรียบร้อยแล้วครับ");
-                document.getElementById('insp-inline-container').classList.add('d-none');
-            } catch(e) { alert("❌ บันทึกไม่สำเร็จ"); } 
-            finally { btn.innerHTML = '<i class="bi bi-save2-fill me-1"></i> บันทึกลงระบบ'; btn.disabled = false; }
+                alert("✨ บันทึกผลการตรวจระเบียบลงฐานข้อมูลเรียบร้อยแล้วครับ"); document.getElementById('insp-inline-container').classList.add('d-none');
+            } catch(e) { alert("❌ บันทึกไม่สำเร็จ"); } finally { btn.innerHTML = '<i class="bi bi-save2-fill me-1"></i> บันทึกลงระบบ'; btn.disabled = false; }
         }
 
-        // ====================================================
-        // 4. ดูประวัติการตรวจ
-        // ====================================================
         async function fetchInspectionHistory() {
-            let cat = document.getElementById('filter-insp-cat').value;
-            if(!cat) return alert("กรุณาเลือกหมวดหมู่ก่อนครับ");
-            const content = document.getElementById('insp-history-content');
-            content.innerHTML = '<span class="spinner-border text-primary my-4"></span><br>กำลังดึงข้อมูล...';
+            let cat = document.getElementById('filter-insp-cat').value; if(!cat) return alert("กรุณาเลือกหมวดหมู่ก่อนครับ");
+            const content = document.getElementById('insp-history-content'); content.innerHTML = '<span class="spinner-border text-primary my-4"></span><br>กำลังดึงข้อมูล...';
             try {
                 const res = await sendToAPI({ action: "getInspections", room: appState.room, category: cat });
                 if(res.success && res.data.length > 0) {
-                    let fail = [], warn = [];
-                    res.data.forEach(r => { if(r.status === 'ไม่ผ่าน') fail.push(r); else if(r.status === 'ตักเตือน') warn.push(r); });
+                    let fail = [], warn = []; res.data.forEach(r => { if(r.status === 'ไม่ผ่าน') fail.push(r); else if(r.status === 'ตักเตือน') warn.push(r); });
                     if(fail.length===0 && warn.length===0) { content.innerHTML = `<i class="bi bi-check-circle text-success fs-1"></i><br>ทุกคนในห้องผ่านระเบียบหมวดนี้แล้วครับ! 🎉`; return; }
                     let html = '<div class="text-start">';
                     const buildTable = (arr, title, colorClass) => {
@@ -589,44 +460,30 @@
                         arr.forEach(r => { t += `<tr><td class="small text-muted">${r.date}</td><td class="small">${r.id}</td><td class="fw-bold text-dark">${r.name}</td><td class="text-center"><button class="btn btn-sm btn-success rounded-pill py-0 px-3" onclick="updateInspToPass(${r.rowIdx}, this)"><i class="bi bi-check2"></i> ให้ผ่าน</button></td></tr>`; });
                         return t + '</table></div>';
                     };
-                    html += buildTable(fail, '<i class="bi bi-x-circle-fill"></i> กลุ่ม ไม่ผ่าน', 'text-danger');
-                    html += buildTable(warn, '<i class="bi bi-exclamation-triangle-fill"></i> กลุ่ม ตักเตือน', 'text-warning');
+                    html += buildTable(fail, '<i class="bi bi-x-circle-fill"></i> กลุ่ม ไม่ผ่าน', 'text-danger'); html += buildTable(warn, '<i class="bi bi-exclamation-triangle-fill"></i> กลุ่ม ตักเตือน', 'text-warning');
                     content.innerHTML = html + '</div>';
                 } else { content.innerHTML = `<i class="bi bi-inbox fs-1"></i><br>ไม่พบประวัติการตรวจที่ไม่ผ่านในหมวดนี้ครับ`; }
             } catch(e) { content.innerHTML = '<span class="text-danger">ดึงข้อมูลล้มเหลว</span>'; }
         }
-
         async function updateInspToPass(rowIdx, btn) {
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>'; btn.disabled = true;
-            try {
-                const res = await sendToAPI({ action: "updateInspectionStatus", rowIdx: rowIdx });
-                if(res.success) { btn.classList.replace('btn-success', 'btn-outline-secondary'); btn.innerHTML = '<i class="bi bi-check2-all"></i> ผ่านแล้ว'; btn.closest('tr').style.opacity = '0.5'; }
-            } catch(e) { alert("อัปเดตล้มเหลว"); btn.innerHTML = 'ให้ผ่าน'; btn.disabled = false; }
+            try { const res = await sendToAPI({ action: "updateInspectionStatus", rowIdx: rowIdx }); if(res.success) { btn.classList.replace('btn-success', 'btn-outline-secondary'); btn.innerHTML = '<i class="bi bi-check2-all"></i> ผ่านแล้ว'; btn.closest('tr').style.opacity = '0.5'; } } 
+            catch(e) { alert("อัปเดตล้มเหลว"); btn.innerHTML = 'ให้ผ่าน'; btn.disabled = false; }
         }
 
-        // ====================================================
-        // 5. Timeline / พิมพ์รายงาน / หัวหน้าเซ็น
-        // ====================================================
         async function generateTimeline() {
-            const dateInput = document.getElementById('week-selector').value;
-            if (!dateInput) return;
+            const dateInput = document.getElementById('week-selector').value; if (!dateInput) return;
             document.getElementById('timeline-container').innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 small text-muted">กำลังดึงข้อมูล...</div></div>';
             document.getElementById('box-submit-action').style.display = 'none'; document.getElementById('teacher-sig-box').style.display = 'none';
             const selectedDate = new Date(dateInput); const day = selectedDate.getDay(); const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1);
             const monday = new Date(selectedDate.setDate(diff)); let friday = new Date(monday); friday.setDate(monday.getDate() + 4);
-            let records = [];
-            try {
-                const res = await sendToAPI({ action: 'getHomeroomData', room: appState.room, startDate: formatISODate(monday), endDate: formatISODate(friday) });
-                if(res && res.data) records = res.data;
-            } catch(e) {}
+            let records = []; try { const res = await sendToAPI({ action: 'getHomeroomData', room: appState.room, startDate: formatISODate(monday), endDate: formatISODate(friday) }); if(res && res.data) records = res.data; } catch(e) {}
             let timelineHTML = ''; let startStr = '', endStr = ''; let weekStatus = 'Draft'; let weekTeacherNote = ''; let weekHeadRemark = ''; let weekSignature = ''; let hasAnyRecord = false;
             for (let i = 0; i < 5; i++) {
                 let currentDay = new Date(monday); currentDay.setDate(monday.getDate() + i); let currentISODate = formatISODate(currentDay);
                 let dateStr = currentDay.toLocaleDateString('th-TH', { weekday: 'short', year: '2-digit', month: 'short', day: 'numeric' });
-                if (i === 0) startStr = currentDay.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
-                if (i === 4) endStr = currentDay.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
-                let record = records.slice().reverse().find(r => r.date === currentISODate);
-                let statusIcon, textClass, detailBox; let todayISODate = formatISODate(now);
+                if (i === 0) startStr = currentDay.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }); if (i === 4) endStr = currentDay.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+                let record = records.slice().reverse().find(r => r.date === currentISODate); let statusIcon, textClass, detailBox; let todayISODate = formatISODate(now);
                 if (record) {
                     hasAnyRecord = true; if(record.status === 'Submitted') weekStatus = 'Submitted'; if(record.status === 'Approved') weekStatus = 'Approved';
                     if(record.teacherNote) weekTeacherNote = record.teacherNote; if(record.headRemark) weekHeadRemark = record.headRemark; if(record.signature) weekSignature = record.signature;
@@ -648,20 +505,16 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> กำลังส่ง...'; btn.disabled = true;
             const selectedDate = new Date(document.getElementById('week-selector').value); const day = selectedDate.getDay(); const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1);
             const monday = new Date(selectedDate.setDate(diff)); let friday = new Date(monday); friday.setDate(monday.getDate() + 4);
-            try {
-                await sendToAPI({ action: 'submitReport', room: appState.room, startDate: formatISODate(monday), endDate: formatISODate(friday), teacherNote: note });
-                appState.isSubmitted = true; appState.teacherNote = note; updateSyncUI(true); alert("✨ ส่งรายงานให้หัวหน้าระดับตรวจสอบเรียบร้อยครับ");
-            } catch(e) { alert("❌ มีปัญหาการเชื่อมต่อ"); btn.innerHTML = '<i class="bi bi-cursor-fill me-2"></i> กดเพื่อเสนอรายงาน'; btn.disabled = false; }
+            try { await sendToAPI({ action: 'submitReport', room: appState.room, startDate: formatISODate(monday), endDate: formatISODate(friday), teacherNote: note }); appState.isSubmitted = true; appState.teacherNote = note; updateSyncUI(true); alert("✨ ส่งรายงานเรียบร้อยครับ"); } 
+            catch(e) { alert("❌ มีปัญหาการเชื่อมต่อ"); btn.innerHTML = '<i class="bi bi-cursor-fill me-2"></i> กดเพื่อเสนอรายงาน'; btn.disabled = false; }
         }
 
         async function generatePrintReport() {
             const monthInput = document.getElementById('print-month-selector').value; if(!monthInput) return;
             const year = parseInt(monthInput.split('-')[0]); const month = parseInt(monthInput.split('-')[1]) - 1; 
             const firstDay = new Date(year, month, 1); const lastDay = new Date(year, month + 1, 0);
-            document.getElementById('print-month-display').innerText = firstDay.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
-            document.getElementById('print-tbody').innerHTML = `<tr><td colspan="3" class="text-center py-5"><span class="spinner-border spinner-border-sm text-primary"></span> กำลังดึงข้อมูล...</td></tr>`;
-            let records = [];
-            try { const res = await sendToAPI({ action: 'getHomeroomData', room: appState.room, startDate: formatISODate(firstDay), endDate: formatISODate(lastDay) }); if(res && res.data) records = res.data; } catch(e) {}
+            document.getElementById('print-month-display').innerText = firstDay.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' }); document.getElementById('print-tbody').innerHTML = `<tr><td colspan="3" class="text-center py-5"><span class="spinner-border spinner-border-sm text-primary"></span> กำลังดึงข้อมูล...</td></tr>`;
+            let records = []; try { const res = await sendToAPI({ action: 'getHomeroomData', room: appState.room, startDate: formatISODate(firstDay), endDate: formatISODate(lastDay) }); if(res && res.data) records = res.data; } catch(e) {}
             let tbodyHTML = ''; let latestSignature = ''; let latestRemark = '';
             if (records.length === 0) { tbodyHTML = `<tr><td colspan="3" class="text-center text-muted py-5">ไม่มีข้อมูลการบันทึกในเดือนที่เลือก</td></tr>`; } 
             else { records.sort((a,b) => new Date(a.date) - new Date(b.date)); records.forEach(r => {
@@ -671,6 +524,28 @@
             document.getElementById('print-tbody').innerHTML = tbodyHTML;
             if (latestSignature) { document.getElementById('print-head-pending').style.display = 'none'; document.getElementById('print-head-approved').style.display = 'block'; document.getElementById('print-head-sig-img').src = latestSignature; document.getElementById('print-head-remark').innerText = latestRemark ? "หมายเหตุ: " + latestRemark : ""; } 
             else { document.getElementById('print-head-pending').style.display = 'block'; document.getElementById('print-head-approved').style.display = 'none'; }
+        }
+
+        // 🌟 ดึงข้อมูลตารางภาพรวม 10 ห้อง สำหรับหัวหน้าระดับ
+        async function loadHeadDashboard() {
+            const tbody = document.getElementById('head-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4"><span class="spinner-border spinner-border-sm text-primary"></span> กำลังกวาดข้อมูลห้องเรียนทั้งหมด...</td></tr>';
+            const today = new Date(); const day = today.getDay(); const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(today.setDate(diff)); let friday = new Date(monday); friday.setDate(monday.getDate() + 4);
+            let level = appState.room.replace('ม.', ''); 
+            try {
+                const res = await sendToAPI({ action: 'getHeadDashboard', level: level, startDate: formatISODate(monday), endDate: formatISODate(friday) });
+                if (res.success) {
+                    let html = '';
+                    res.data.forEach(r => {
+                        let badge = '<span class="badge bg-secondary">ยังไม่ส่งรายงาน</span>'; let btnDisabled = 'disabled'; let btnClass = 'btn-secondary'; let btnText = 'ตรวจเอกสาร';
+                        if (r.status === 'รอตรวจสอบ') { badge = '<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> รอตรวจสอบ</span>'; btnDisabled = ''; btnClass = 'btn-primary'; } 
+                        else if (r.status === 'ตรวจสอบแล้ว') { badge = '<span class="badge bg-success"><i class="bi bi-check2-all"></i> รับทราบแล้ว</span>'; btnDisabled = 'disabled'; btnClass = 'btn-outline-success'; btnText = 'ตรวจสอบแล้ว'; }
+                        html += `<tr><td class="px-4 fw-bold text-primary">${r.room}</td><td class="small">${r.teacher}</td><td>${badge}</td><td class="text-center"><button class="btn btn-sm ${btnClass} rounded-pill px-3" ${btnDisabled} onclick="openReviewModal('${r.room}')">${btnText}</button></td></tr>`;
+                    });
+                    tbody.innerHTML = html;
+                }
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">ดึงข้อมูลล้มเหลว</td></tr>'; }
         }
 
         async function openReviewModal(room) {
@@ -702,9 +577,7 @@
 
         function updateSyncUI(hasAnyRecord = true) {
             if(appState.role === 'head') {
-                const statusTd = document.getElementById('head-status-td'); const btnM21 = document.getElementById('btn-review-m21');
-                if(appState.isApproved) { statusTd.innerHTML = '<span class="badge bg-success"><i class="bi bi-check2-all"></i> รับทราบแล้ว</span>'; btnM21.className = "btn btn-sm btn-outline-success rounded-pill px-3"; btnM21.innerText = "ตรวจสอบแล้ว"; btnM21.disabled = true; } 
-                else { statusTd.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> รอตรวจสอบ</span>'; btnM21.disabled = false; }
+                if(appState.isApproved) loadHeadDashboard(); // 🌟 อัปเดตตารางหัวหน้าอัตโนมัติ
             }
             if(appState.role === 'teacher') {
                 const badge = document.getElementById('teacher-status-badge'); const boxAct = document.getElementById('box-submit-action'); const sigBox = document.getElementById('teacher-sig-box'); const btnSubmit = document.getElementById('btn-submit-head');
